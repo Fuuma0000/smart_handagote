@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "323904209591",
+    "project_id": "smart-handagote",
+    "storage_bucket": "smart-handagote.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:323904209591:android:f3652e2fbe992993730332",
+        "android_client_info": {
+          "package_name": "com.example.smart_handagote"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "323904209591-9p5fdbanm9phelgah8sd6kfq0ur1n0do.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBnIbGKbWFtJtdFnsBTHhWFKZIL5D9nIdk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "323904209591-9p5fdbanm9phelgah8sd6kfq0ur1n0do.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
