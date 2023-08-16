@@ -67,7 +67,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '323904209591',
     projectId: 'smart-handagote',
     storageBucket: 'smart-handagote.appspot.com',
-    iosClientId: '323904209591-e7dhms06dee279g554cem67cm7bl4j84.apps.googleusercontent.com',
+    iosClientId:
+        '323904209591-e7dhms06dee279g554cem67cm7bl4j84.apps.googleusercontent.com',
     iosBundleId: 'com.example.smartHandagote',
   );
 
@@ -77,7 +78,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '323904209591',
     projectId: 'smart-handagote',
     storageBucket: 'smart-handagote.appspot.com',
-    iosClientId: '323904209591-c4cm2l3bibbokdkjpnl8l5ii2ana39qf.apps.googleusercontent.com',
+    iosClientId:
+        '323904209591-c4cm2l3bibbokdkjpnl8l5ii2ana39qf.apps.googleusercontent.com',
     iosBundleId: 'com.example.smartHandagote.RunnerTests',
   );
 }
