@@ -1,8 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:smart_handagote/view/test_update_role_page.dart';
 
 import 'firebase_options.dart';
-import 'view/test-login.dart';
+import 'view/test_login.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized(); // この行を追加
@@ -26,7 +27,8 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const TestLoginPage(),
+      // home: const TestLoginPage(),
+      home: const UserManagementPage(),
       // home: const MyHomePage(),
     );
   }

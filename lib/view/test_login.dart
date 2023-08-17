@@ -14,6 +14,7 @@ class TestLoginPage extends StatefulWidget {
 class _TestLoginPage extends State<TestLoginPage> {
   // 入力したメールアドレス・パスワード
   String _name = '';
+  String _studentId = '';
   String _email = '';
   String _password = '';
 
@@ -39,10 +40,18 @@ class _TestLoginPage extends State<TestLoginPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               TextFormField(
-                decoration: const InputDecoration(labelText: 'ニックネーム'),
+                decoration: const InputDecoration(labelText: '名前'),
                 onChanged: (String value) {
                   setState(() {
                     _name = value;
+                  });
+                },
+              ),
+              TextFormField(
+                decoration: const InputDecoration(labelText: '学籍番号'),
+                onChanged: (String value) {
+                  setState(() {
+                    _studentId = value;
                   });
                 },
               ),
@@ -65,9 +74,9 @@ class _TestLoginPage extends State<TestLoginPage> {
               ),
               ElevatedButton(
                 child: const Text('ユーザ登録'),
+                // TODO: ユーザ登録処理
                 onPressed: () async {
                   try {
-                    print("try start");
                     final User? user = (await FirebaseAuth.instance
                             .createUserWithEmailAndPassword(
                                 email: _email, password: _password))
@@ -79,12 +88,11 @@ class _TestLoginPage extends State<TestLoginPage> {
                           .doc(user.uid)
                           .set({
                         'name': _name,
-                        'userID': user.uid,
-                        'groupID': null
+                        'student_id': _studentId,
+                        'role': 0,
                       });
                       await prefs.setString('userID', user.uid);
                     }
-                    print("try end");
                   } catch (e) {
                     print(e);
                   }
@@ -92,6 +100,7 @@ class _TestLoginPage extends State<TestLoginPage> {
               ),
               ElevatedButton(
                 child: const Text('ログイン'),
+                // TODO: ログイン処理
                 onPressed: () async {
                   try {
                     // メール/パスワードでログイン
@@ -105,37 +114,6 @@ class _TestLoginPage extends State<TestLoginPage> {
                   }
                 },
               ),
-              ElevatedButton(
-                  child: const Text('グループを作成'),
-                  // グループを作成する処理を書く
-                  onPressed: () async {
-                    // groupsを作成
-                    DocumentReference docRef = await FirebaseFirestore.instance
-                        .collection('groups')
-                        .add({});
-                    // 作成したドキュメントIDを取得
-                    String documentID = docRef.id;
-                    // ドキュメントIDに対してgroupIDフィールドを更新
-                    await FirebaseFirestore.instance
-                        .collection('groups')
-                        .doc(documentID)
-                        .update({
-                      'groupID': documentID,
-                    });
-                    await prefs.setString('groupID', documentID);
-                  }),
-              ElevatedButton(
-                  child: const Text('userIDを表示'),
-                  // グループを作成する処理を書く
-                  onPressed: () {
-                    print(prefs.getString('userID'));
-                  }),
-              ElevatedButton(
-                  child: const Text('groupIDを表示'),
-                  // グループを作成する処理を書く
-                  onPressed: () {
-                    print(prefs.getString('groupID'));
-                  }),
             ],
           ),
         ),
