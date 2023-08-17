@@ -52,6 +52,8 @@ class _TestReservationPageState extends State<TestReservationPage> {
       }
     }
 
+    // 予約一覧をタイムスタンプで昇順にソート
+    reservations.sort((a, b) => a['timestamp'].compareTo(b['timestamp']));
     return reservations;
   }
 
