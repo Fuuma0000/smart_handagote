@@ -12,20 +12,24 @@ class TestReservationPage extends StatefulWidget {
 
 class _TestReservationPageState extends State<TestReservationPage> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  List<Map<String, dynamic>>? _reservations; // Nullable
+  late Stream<QuerySnapshot>
+      _reservationsStream; // Make it 'late' and initialize it
 
   @override
   void initState() {
     super.initState();
-    _loadReservations();
+    _reservationsStream = _firestore.collection('reservations').snapshots();
   }
 
-  Future<void> _loadReservations() async {
-    QuerySnapshot querySnapshot =
-        await _firestore.collection('reservations').get();
+  Future<void> _cancelReservation(String reservationId) async {
+    await _firestore.collection('reservations').doc(reservationId).delete();
+  }
+
+  Future<List<Map<String, dynamic>>> _fetchReservationsData(
+      QuerySnapshot snapshot) async {
     List<Map<String, dynamic>> reservations = [];
 
-    for (QueryDocumentSnapshot doc in querySnapshot.docs) {
+    for (QueryDocumentSnapshot doc in snapshot.docs) {
       String userId = doc['user_id'];
 
       DocumentSnapshot userDoc =
@@ -41,14 +45,8 @@ class _TestReservationPageState extends State<TestReservationPage> {
         });
       }
     }
-    setState(() {
-      _reservations = reservations;
-    });
-  }
 
-  Future<void> _cancelReservation(String reservationId) async {
-    await _firestore.collection('reservations').doc(reservationId).delete();
-    _loadReservations();
+    return reservations;
   }
 
   Future<void> _makeReservation() async {
@@ -60,7 +58,6 @@ class _TestReservationPageState extends State<TestReservationPage> {
           'timestamp': FieldValue.serverTimestamp(),
           'is_ready': false,
         });
-        _loadReservations();
       } catch (e) {
         if (kDebugMode) {
           print('Error making reservation: $e');
@@ -83,29 +80,54 @@ class _TestReservationPageState extends State<TestReservationPage> {
             ),
             const SizedBox(height: 20),
             const Text('予約一覧'),
-            if (_reservations != null)
-              Expanded(
-                child: ListView.builder(
-                  itemCount: _reservations!.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    String statusText =
-                        _reservations![index]['isReady'] ? '使用可能' : '予約中';
-                    return ListTile(
-                      title: Text(
-                          '${_reservations![index]['userName']} - $statusText'),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: () {
-                          _cancelReservation(
-                              _reservations![index]['reservationId']);
+            StreamBuilder<QuerySnapshot>(
+              stream: _reservationsStream,
+              builder: (BuildContext context,
+                  AsyncSnapshot<QuerySnapshot> snapshot) {
+                if (snapshot.hasError) {
+                  return Text('エラー: ${snapshot.error}');
+                }
+
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const CircularProgressIndicator();
+                }
+
+                return FutureBuilder<List<Map<String, dynamic>>>(
+                  future: _fetchReservationsData(snapshot.data!),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<List<Map<String, dynamic>>> dataSnapshot) {
+                    if (dataSnapshot.connectionState ==
+                        ConnectionState.waiting) {
+                      return const CircularProgressIndicator();
+                    }
+
+                    List<Map<String, dynamic>> reservations =
+                        dataSnapshot.data ?? [];
+
+                    return Expanded(
+                      child: ListView.builder(
+                        itemCount: reservations.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          String statusText =
+                              reservations[index]['isReady'] ? '使用可能' : '予約中';
+                          return ListTile(
+                            title: Text(
+                                '${reservations[index]['userName']} - $statusText'),
+                            trailing: IconButton(
+                              icon: const Icon(Icons.delete),
+                              onPressed: () {
+                                _cancelReservation(
+                                    reservations[index]['reservationId']);
+                              },
+                            ),
+                          );
                         },
                       ),
                     );
                   },
-                ),
-              )
-            else
-              const CircularProgressIndicator(),
+                );
+              },
+            ),
           ],
         ),
       ),
