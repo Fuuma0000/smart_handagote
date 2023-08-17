@@ -66,6 +66,26 @@ class _TestReservationPageState extends State<TestReservationPage> {
     }
   }
 
+  Widget _buildReservationList(List<Map<String, dynamic>> reservations) {
+    return Expanded(
+      child: ListView.builder(
+        itemCount: reservations.length,
+        itemBuilder: (BuildContext context, int index) {
+          String statusText = reservations[index]['isReady'] ? '使用可能' : '予約中';
+          return ListTile(
+            title: Text('${reservations[index]['userName']} - $statusText'),
+            trailing: IconButton(
+              icon: const Icon(Icons.delete),
+              onPressed: () {
+                _cancelReservation(reservations[index]['reservationId']);
+              },
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -104,26 +124,7 @@ class _TestReservationPageState extends State<TestReservationPage> {
                     List<Map<String, dynamic>> reservations =
                         dataSnapshot.data ?? [];
 
-                    return Expanded(
-                      child: ListView.builder(
-                        itemCount: reservations.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          String statusText =
-                              reservations[index]['isReady'] ? '使用可能' : '予約中';
-                          return ListTile(
-                            title: Text(
-                                '${reservations[index]['userName']} - $statusText'),
-                            trailing: IconButton(
-                              icon: const Icon(Icons.delete),
-                              onPressed: () {
-                                _cancelReservation(
-                                    reservations[index]['reservationId']);
-                              },
-                            ),
-                          );
-                        },
-                      ),
-                    );
+                    return _buildReservationList(reservations);
                   },
                 );
               },
