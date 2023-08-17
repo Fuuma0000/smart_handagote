@@ -12,8 +12,7 @@ class TestReservationPage extends StatefulWidget {
 
 class _TestReservationPageState extends State<TestReservationPage> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  late Stream<QuerySnapshot>
-      _reservationsStream; // Make it 'late' and initialize it
+  late Stream<QuerySnapshot> _reservationsStream;
 
   @override
   void initState() {
@@ -21,22 +20,29 @@ class _TestReservationPageState extends State<TestReservationPage> {
     _reservationsStream = _firestore.collection('reservations').snapshots();
   }
 
+  // キャンセルボタンを押したときの処理
   Future<void> _cancelReservation(String reservationId) async {
+    // 予約を削除
     await _firestore.collection('reservations').doc(reservationId).delete();
   }
 
+  // 予約一覧を取得 (Firestore から取得したデータを整形)
   Future<List<Map<String, dynamic>>> _fetchReservationsData(
       QuerySnapshot snapshot) async {
+    // 予約一覧を格納する配列
     List<Map<String, dynamic>> reservations = [];
 
+    // 予約一覧を整形
     for (QueryDocumentSnapshot doc in snapshot.docs) {
       String userId = doc['user_id'];
 
+      // ユーザー名を取得
       DocumentSnapshot userDoc =
           await _firestore.collection('users').doc(userId).get();
+      // ユーザーが削除されていたらスキップ
       if (userDoc.exists) {
         String userName = userDoc['name'];
-        bool isReady = doc['is_ready'] ?? false; // Default to false if not set
+        bool isReady = doc['is_ready'];
         reservations.add({
           'reservationId': doc.id,
           'timestamp': doc['timestamp'],
@@ -49,8 +55,11 @@ class _TestReservationPageState extends State<TestReservationPage> {
     return reservations;
   }
 
+  // 予約を作成
   Future<void> _makeReservation() async {
+    // 現在ログインしているユーザーを取得
     final User? user = FirebaseAuth.instance.currentUser;
+    // ユーザーが存在していたら予約を作成
     if (user != null) {
       try {
         await _firestore.collection('reservations').add({
@@ -66,18 +75,21 @@ class _TestReservationPageState extends State<TestReservationPage> {
     }
   }
 
+  // 予約一覧を表示するウィジェット
   Widget _buildReservationList(List<Map<String, dynamic>> reservations) {
     return Expanded(
       child: ListView.builder(
         itemCount: reservations.length,
         itemBuilder: (BuildContext context, int index) {
-          String statusText = reservations[index]['isReady'] ? '使用可能' : '予約中';
+          String statusText =
+              reservations[index]['isReady'] ? '使用可能' : '予約中'; // 予約の状態を表すテキスト
           return ListTile(
             title: Text('${reservations[index]['userName']} - $statusText'),
             trailing: IconButton(
               icon: const Icon(Icons.delete),
               onPressed: () {
-                _cancelReservation(reservations[index]['reservationId']);
+                _cancelReservation(
+                    reservations[index]['reservationId']); // 予約をキャンセル
               },
             ),
           );
@@ -100,31 +112,35 @@ class _TestReservationPageState extends State<TestReservationPage> {
             ),
             const SizedBox(height: 20),
             const Text('予約一覧'),
+            // StreamBuilder で Firestore のデータを監視
             StreamBuilder<QuerySnapshot>(
-              stream: _reservationsStream,
+              stream: _reservationsStream, // リアルタイムで予約データを取得するストリーム
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (snapshot.hasError) {
-                  return Text('エラー: ${snapshot.error}');
+                  return Text(
+                      'エラー: ${snapshot.error}'); // エラーが発生した場合にエラーメッセージを表示
                 }
 
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const CircularProgressIndicator();
+                  return const CircularProgressIndicator(); // データがロード中の間、進行中のインジケータを表示
                 }
 
                 return FutureBuilder<List<Map<String, dynamic>>>(
-                  future: _fetchReservationsData(snapshot.data!),
+                  future: _fetchReservationsData(
+                      snapshot.data!), // スナップショットから予約データを非同期で取得
                   builder: (BuildContext context,
                       AsyncSnapshot<List<Map<String, dynamic>>> dataSnapshot) {
                     if (dataSnapshot.connectionState ==
                         ConnectionState.waiting) {
-                      return const CircularProgressIndicator();
+                      return const CircularProgressIndicator(); // データがロード中の間、進行中のインジケータを表示
                     }
 
                     List<Map<String, dynamic>> reservations =
-                        dataSnapshot.data ?? [];
+                        dataSnapshot.data ?? []; // ロードされた予約データ
 
-                    return _buildReservationList(reservations);
+                    return _buildReservationList(
+                        reservations); // 予約データを表示するウィジェットを返す
                   },
                 );
               },
