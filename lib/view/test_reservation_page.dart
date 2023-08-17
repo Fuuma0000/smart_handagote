@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class TestReservationPage extends StatefulWidget {
   const TestReservationPage({Key? key}) : super(key: key);
@@ -85,8 +86,18 @@ class _TestReservationPageState extends State<TestReservationPage> {
         itemBuilder: (BuildContext context, int index) {
           String statusText =
               reservations[index]['isReady'] ? '使用可能' : '予約中'; // 予約の状態を表すテキスト
+
+          // Firestoreから取得したタイムスタンプをDateTimeに変換
+          DateTime reservationTime =
+              (reservations[index]['timestamp'] as Timestamp).toDate();
+
+          // 予約時間を指定のフォーマットで表示
+          String formattedTime =
+              DateFormat('yyyy/MM/dd HH:mm').format(reservationTime);
+
           return ListTile(
             title: Text('${reservations[index]['userName']} - $statusText'),
+            subtitle: Text('予約時間: $formattedTime'), // 予約時間を表示
             trailing: IconButton(
               icon: const Icon(Icons.delete),
               onPressed: () {
