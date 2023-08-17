@@ -32,8 +32,11 @@ class _TestReservationPageState extends State<TestReservationPage> {
           await _firestore.collection('users').doc(userId).get();
       if (userDoc.exists) {
         String userName = userDoc['name'];
+        bool isReady = doc['is_ready'] ?? false; // Default to false if not set
         reservations.add({
           'reservationId': doc.id,
+          'timestamp': doc['timestamp'],
+          'isReady': isReady,
           'userName': userName,
         });
       }
@@ -85,13 +88,16 @@ class _TestReservationPageState extends State<TestReservationPage> {
                 child: ListView.builder(
                   itemCount: _reservations!.length,
                   itemBuilder: (BuildContext context, int index) {
+                    String statusText =
+                        _reservations![index]['isReady'] ? '使用可能' : '予約中';
                     return ListTile(
-                      title: Text(_reservations![index]['userName']),
+                      title: Text(
+                          '${_reservations![index]['userName']} - $statusText'),
                       trailing: IconButton(
                         icon: const Icon(Icons.delete),
                         onPressed: () {
-                          _cancelReservation(_reservations![index]
-                              ['reservationId']); // reservationId を渡す
+                          _cancelReservation(
+                              _reservations![index]['reservationId']);
                         },
                       ),
                     );
