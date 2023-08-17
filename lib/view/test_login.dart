@@ -31,6 +31,17 @@ class _TestLoginPage extends State<TestLoginPage> {
 
   Future<void> registerUser() async {
     try {
+      // 学籍番号が被らないかチェック
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('student_id', isEqualTo: _studentId)
+          .get();
+      if (querySnapshot.size > 0) {
+        if (kDebugMode) {
+          print('学籍番号が被っています');
+        }
+        return;
+      }
       final User? user = (await FirebaseAuth.instance
               .createUserWithEmailAndPassword(
                   email: _email, password: _password))
