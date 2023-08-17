@@ -65,11 +65,14 @@ class _TestReservationPageState extends State<TestReservationPage> {
     // ユーザーが存在していたら予約を作成
     if (user != null) {
       try {
-        await _firestore.collection('reservations').add({
-          'user_id': user.uid,
-          'timestamp': FieldValue.serverTimestamp(),
-          'is_ready': false,
-        });
+        // すでに予約している場合は予約不可
+        if (await _isReservationAllowed()) {
+          await _firestore.collection('reservations').add({
+            'user_id': user.uid,
+            'timestamp': FieldValue.serverTimestamp(),
+            'is_ready': false,
+          });
+        }
       } catch (e) {
         if (kDebugMode) {
           print('Error making reservation: $e');
@@ -109,6 +112,33 @@ class _TestReservationPageState extends State<TestReservationPage> {
         },
       ),
     );
+  }
+
+  // 予約可能かどうかをチェックする関数
+  // TODO: ここまでasyncにしてるから予約の方で呼び出す
+  Future<bool> _isReservationAllowed() async {
+    final User? user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      return false; // ユーザーがログインしていない場合は予約不可
+    }
+
+    // ユーザーがすでに予約しているかチェック
+    bool hasExistingReservation = false;
+
+    // reservationsのコレクションにuser_idが一致するドキュメントがあるか検索
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('reservations')
+        .where('user_id', isEqualTo: user.uid)
+        .get();
+    if (querySnapshot.size > 0) {
+      if (kDebugMode) {
+        print('すでに予約しています');
+      }
+    } else {
+      hasExistingReservation = true;
+    }
+    print(hasExistingReservation);
+    return hasExistingReservation;
   }
 
   @override
