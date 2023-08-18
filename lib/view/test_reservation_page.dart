@@ -54,6 +54,7 @@ class _TestReservationPageState extends State<TestReservationPage> {
     }
 
     // 予約一覧をタイムスタンプで昇順にソート
+    // TODO:_TypeError (type 'Null' is not a subtype of type 'Timestamp' of 'other')
     reservations.sort((a, b) => a['timestamp'].compareTo(b['timestamp']));
     return reservations;
   }
@@ -65,6 +66,7 @@ class _TestReservationPageState extends State<TestReservationPage> {
     // ユーザーが存在していたら予約を作成
     if (user != null) {
       try {
+        // TODO: 権限があるか確認
         // すでに予約している場合は予約不可
         if (await _isReservationAllowed()) {
           await _firestore.collection('reservations').add({
@@ -91,6 +93,7 @@ class _TestReservationPageState extends State<TestReservationPage> {
               reservations[index]['isReady'] ? '使用可能' : '予約中'; // 予約の状態を表すテキスト
 
           // Firestoreから取得したタイムスタンプをDateTimeに変換
+          // TODO:_TypeError (type 'Null' is not a subtype of type 'Timestamp' in type cast)
           DateTime reservationTime =
               (reservations[index]['timestamp'] as Timestamp).toDate();
 
@@ -115,7 +118,6 @@ class _TestReservationPageState extends State<TestReservationPage> {
   }
 
   // 予約可能かどうかをチェックする関数
-  // TODO: ここまでasyncにしてるから予約の方で呼び出す
   Future<bool> _isReservationAllowed() async {
     final User? user = FirebaseAuth.instance.currentUser;
     if (user == null) {
@@ -132,6 +134,7 @@ class _TestReservationPageState extends State<TestReservationPage> {
         .get();
     if (querySnapshot.size > 0) {
       if (kDebugMode) {
+        // TODO: 判定できたからポップアップで表示したいかも
         print('すでに予約しています');
       }
     } else {
