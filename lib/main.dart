@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:smart_handagote/view/test_reservation_page.dart';
 import 'package:smart_handagote/view/test_update_role_page.dart';
 
 import 'firebase_options.dart';
@@ -28,8 +29,9 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       // home: const TestLoginPage(),
-      home: const UserManagementPage(),
+      // home: const UserManagementPage(),
       // home: const MyHomePage(),
+      home: const TestReservationPage(),
     );
   }
 }
