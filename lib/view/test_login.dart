@@ -37,9 +37,7 @@ class _TestLoginPage extends State<TestLoginPage> {
           .where('student_id', isEqualTo: _studentId)
           .get();
       if (querySnapshot.size > 0) {
-        if (kDebugMode) {
-          print('学籍番号が被っています');
-        }
+        print('学籍番号が被っています');
         return;
       }
       final User? user = (await FirebaseAuth.instance
@@ -55,9 +53,7 @@ class _TestLoginPage extends State<TestLoginPage> {
         await prefs.setString('userID', user.uid);
       }
     } catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
+      print(e);
     }
   }
 
@@ -67,14 +63,10 @@ class _TestLoginPage extends State<TestLoginPage> {
               .signInWithEmailAndPassword(email: _email, password: _password))
           .user;
       if (user != null) {
-        if (kDebugMode) {
-          print("ログイン成功");
-        }
+        print("ログイン成功");
       }
     } catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
+      print(e);
     }
   }
 

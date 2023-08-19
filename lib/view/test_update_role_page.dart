@@ -40,9 +40,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
             .update({'role': newRole});
       }
     } catch (e) {
-      if (kDebugMode) {
-        print('Error updating user role: $e');
-      }
+      print('Error updating user role: $e');
     }
   }
 

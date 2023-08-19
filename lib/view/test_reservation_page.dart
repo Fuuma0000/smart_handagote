@@ -66,7 +66,7 @@ class _TestReservationPageState extends State<TestReservationPage> {
     // ユーザーが存在していたら予約を作成
     if (user != null) {
       try {
-        //  権限があるか確認
+        // 権限があるか確認
         if (await _isAuthorized(user.uid)) {
           // すでに予約している場合は予約不可
           if (await _isReservationAllowed()) {
@@ -78,9 +78,7 @@ class _TestReservationPageState extends State<TestReservationPage> {
           }
         }
       } catch (e) {
-        if (kDebugMode) {
-          print('Error making reservation: $e');
-        }
+        print('Error making reservation: $e');
       }
     }
   }
@@ -132,11 +130,9 @@ class _TestReservationPageState extends State<TestReservationPage> {
         .where('user_id', isEqualTo: user.uid)
         .get();
     if (querySnapshot.size > 0) {
-      if (kDebugMode) {
-        // TODO: 判定できたからポップアップで表示したいかも
-        print('すでに予約しています');
-        return false;
-      }
+      // TODO: 判定できたからポップアップで表示したいかも
+      print('すでに予約しています');
+      return false;
     }
     return true;
   }
