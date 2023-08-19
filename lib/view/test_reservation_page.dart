@@ -66,14 +66,16 @@ class _TestReservationPageState extends State<TestReservationPage> {
     // ユーザーが存在していたら予約を作成
     if (user != null) {
       try {
-        // TODO: 権限があるか確認
-        // すでに予約している場合は予約不可
-        if (await _isReservationAllowed()) {
-          await _firestore.collection('reservations').add({
-            'user_id': user.uid,
-            'timestamp': FieldValue.serverTimestamp(),
-            'is_ready': false,
-          });
+        //  権限があるか確認
+        if (await _isAuthorized(user.uid)) {
+          // すでに予約している場合は予約不可
+          if (await _isReservationAllowed()) {
+            await _firestore.collection('reservations').add({
+              'user_id': user.uid,
+              'timestamp': FieldValue.serverTimestamp(),
+              'is_ready': false,
+            });
+          }
         }
       } catch (e) {
         if (kDebugMode) {
@@ -124,9 +126,6 @@ class _TestReservationPageState extends State<TestReservationPage> {
       return false; // ユーザーがログインしていない場合は予約不可
     }
 
-    // ユーザーがすでに予約しているかチェック
-    bool hasExistingReservation = false;
-
     // reservationsのコレクションにuser_idが一致するドキュメントがあるか検索
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('reservations')
@@ -136,12 +135,25 @@ class _TestReservationPageState extends State<TestReservationPage> {
       if (kDebugMode) {
         // TODO: 判定できたからポップアップで表示したいかも
         print('すでに予約しています');
+        return false;
       }
-    } else {
-      hasExistingReservation = true;
     }
-    print(hasExistingReservation);
-    return hasExistingReservation;
+    return true;
+  }
+
+  // 権限があるかどうかをチェックする関数
+  Future<bool> _isAuthorized(userId) async {
+    // ユーザーの権限を取得
+    DocumentSnapshot userDoc =
+        await _firestore.collection('users').doc(userId).get();
+    if (userDoc.exists) {
+      int role = userDoc['role'];
+      if (role == 1 || role == 2) {
+        return true; // 管理者の場合は権限あり
+      }
+    }
+    print('権限がありません');
+    return false; // 管理者でない場合は権限なし
   }
 
   @override
