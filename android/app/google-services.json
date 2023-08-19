@@ -29,6 +29,13 @@
             {
               "client_id": "323904209591-9p5fdbanm9phelgah8sd6kfq0ur1n0do.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "323904209591-c4cm2l3bibbokdkjpnl8l5ii2ana39qf.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.smartHandagote.RunnerTests"
+              }
             }
           ]
         }
