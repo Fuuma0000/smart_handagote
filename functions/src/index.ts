@@ -60,3 +60,90 @@ export const startUsing = functions.https.onRequest(async (req, res) => {
 
   return;
 });
+
+// はんだごて使用終了時
+export const endUsing = functions.https.onRequest(async (req, res) => {
+  try {
+    const { log_id } = req.body;
+
+    // logsコレクションのend_timeを更新
+    const logRef = admin.firestore().collection('logs').doc(log_id);
+    await logRef.update({ end_time: Timestamp.now() });
+
+    // 一番古い予約を取得
+    const reservationDoc = await admin.firestore().collection('reservations').where('is_ready', '==', false).orderBy('reservation_time', 'asc').limit(1).get();
+
+    if (reservationDoc.empty) {
+      res.status(200).send('success: no reservation');
+      return;
+    }
+
+    const nextReservationData = reservationDoc.docs[0].data();
+    const nextReservationId = reservationDoc.docs[0].id;
+
+    await admin.firestore().collection('reservations').doc(nextReservationId).update({ is_ready: true });
+
+    // 通知を送信
+    const userDoc = await admin.firestore().collection('users').doc(nextReservationData.user_id).get();
+    const userToken = userDoc.data()!.token;
+    const device_id = (await logRef.get()).data()!.device_id;
+    const messageTitle = '予約の順番が来ました';
+    const messageBody = `デバイスID: ${device_id} が使用可能です`;
+
+    await sendNotification(userToken, messageTitle, messageBody);
+    res.status(200).send('operation success');
+  } catch (error) {
+    functions.logger.error('Error', error);
+    res.status(500).send('Internal Server Error');
+  }
+  return;
+});
+
+async function sendNotification(userToken: string, messageTitle: string, messageBody: string) {
+  const message = {
+    notification: {
+      title: messageTitle,
+      body: messageBody,
+    },
+    token: userToken,
+  };
+
+  try {
+    const response = await admin.messaging().send(message);
+    functions.logger.info('Notification sent successfully', response);
+  } catch (error) {
+    functions.logger.error('Error sending notification', error);
+  }
+}
+
+// テスト用データを挿入
+export const insertTestData = functions.https.onRequest(async (req, res) => {
+  // usersコレクション
+  const users = [
+    {
+      user_id: '1111',
+      name: '山田 太郎',
+      role: 0,
+      token: 'ea0Ag-HbS6mdm3CGU1Wu74:APA91bFUFtzoQ2lPpi1KHfl23yt5EgDIaXyY-P20lqSrnAsbLmpcRmJqVndk8jnOD3KgyRHy2T2VrRWJgwy3H5U1zPCmxzrrC5VVuwFHXKt6w51TbNmoYx2KC7qzoh7WGOlmDYmpBXXd',
+    },
+    {
+      user_id: '1112',
+      name: '田中 一郎',
+      role: 1,
+      token: 'test_token_2',
+    },
+    {
+      user_id: '1113',
+      name: '鈴木 三郎',
+      role: 2,
+      token: 'test_token_3',
+    },
+  ];
+
+  const usersRef = admin.firestore().collection('users');
+  users.forEach(async (user) => {
+    await usersRef.doc(user.user_id).set(user);
+  });
+
+  return;
+});
