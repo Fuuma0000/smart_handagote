@@ -4,6 +4,7 @@ import 'package:animated_notch_bottom_bar/animated_notch_bottom_bar/animated_not
 import 'package:flutter/material.dart';
 
 import '../constant.dart';
+import '../view/test_update_role_page.dart';
 
 class NavBar extends StatefulWidget {
   const NavBar({Key? key}) : super(key: key);
@@ -14,10 +15,10 @@ class NavBar extends StatefulWidget {
 
 class _NavBarState extends State<NavBar> {
   /// Controller to handle PageView and also handles initial page
-  final _pageController = PageController(initialPage: 0);
+  final _pageController = PageController(initialPage: 1);
 
   /// Controller to handle bottom nav bar and also handles initial page
-  final _controller = NotchBottomBarController(index: 0);
+  final _controller = NotchBottomBarController(index: 1);
 
   int maxCount = 3;
 
@@ -32,6 +33,7 @@ class _NavBarState extends State<NavBar> {
     const Page1(),
     const Page2(),
     const Page3(),
+    // const UserManagementPage(),
   ];
 
   @override
@@ -95,7 +97,7 @@ class _NavBarState extends State<NavBar> {
                     Icons.settings,
                     color: Constant.lightGray,
                   ),
-                  itemLabel: 'Page 2',
+                  itemLabel: 'Page 3',
                 ),
               ],
               onTap: (index) {
