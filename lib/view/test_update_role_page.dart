@@ -65,7 +65,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
           .update({'role': newRole});
       // ダイアログを表示
       await _showDialog(
-          '権限を更新しました', _roleOptions[newRole]['label'] + 'に更新しました');
+          '権限を更新しました', _roleOptions[newRole]['label'] + ' に更新しました');
     } catch (e) {
       // ダイアログを表示
       await _showDialog('エラー', '権限の更新に失敗しました');
@@ -79,11 +79,18 @@ class _UserManagementPageState extends State<UserManagementPage> {
       context: context,
       builder: (_) {
         return AlertDialog(
-          title: Text(title),
-          content: Text(message),
+          title: Text(
+            title,
+            style: const TextStyle(color: Colors.white), // タイトルの色を白に設定
+          ),
+          content: Text(
+            message,
+            style: const TextStyle(color: Colors.white), // メッセージの色を白に設定
+          ),
+          backgroundColor: Constant.darkGray, // ダイアログの背景色をダークグレーに設定
           actions: <Widget>[
             TextButton(
-              child: const Text('OK'),
+              child: const Text('OK', style: TextStyle(color: Colors.green)),
               onPressed: () {
                 Navigator.pop(context);
               },
