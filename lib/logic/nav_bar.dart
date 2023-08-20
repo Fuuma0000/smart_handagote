@@ -86,7 +86,6 @@ class _NavBarState extends State<NavBar> {
                   ),
                   itemLabel: 'Page 2',
                 ),
-
                 BottomBarItem(
                   inActiveItem: Icon(
                     Icons.settings,
@@ -98,19 +97,6 @@ class _NavBarState extends State<NavBar> {
                   ),
                   itemLabel: 'Page 2',
                 ),
-
-                ///svg example
-                // BottomBarItem(
-                //   inActiveItem: SvgPicture.asset(
-                //     'assets/search_icon.svg',
-                //     color: Constant.lightGray,
-                //   ),
-                //   activeItem: SvgPicture.asset(
-                //     'assets/search_icon.svg',
-                //     color: Constant.lightGray,
-                //   ),
-                //   itemLabel: 'Page 3',
-                // ),
               ],
               onTap: (index) {
                 /// perform action on tab change and to update pages you can update pages without pages
