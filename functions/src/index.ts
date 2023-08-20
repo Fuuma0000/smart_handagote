@@ -35,11 +35,20 @@ export const startUsing = functions.https.onRequest(async (req, res) => {
       return;
     }
 
+    // TODO: テスト
     // reservationコレクションの確認
-    const reservationDocs = await admin.firestore().collection('reservations').get();
+    const reservationCollection = await admin.firestore().collection('reservations');
+    const reservationDocs = await reservationCollection.get();
     if (!reservationDocs.empty) {
       res.status(403).send('Device is not available');
       return;
+    }
+
+    // TODO: テスト
+    // reservationコレクションに自分の予約があれば削除
+    const myReservationDoc = await reservationCollection.where('user_id', '==', user_id).get();
+    if (!myReservationDoc.empty) {
+      await myReservationDoc.docs[0].ref.delete();
     }
 
     // logsに追加
@@ -116,6 +125,37 @@ async function sendNotification(userToken: string, messageTitle: string, message
   }
 }
 
+// 切り忘れ検知時の処理
+export const alert = functions.https.onRequest(async (req, res) => {
+  try {
+    const { user_id, device_id, log_id } = req.body;
+
+    // logs/{log_id}のis_turn_offを更新
+    const logDoc = await admin.firestore().collection('logs').doc(log_id);
+    await logDoc.update({ is_turn_off: true });
+
+    // 通知
+    const adminDocs = await admin.firestore().collection('users').where('role', '==', 2).get();
+    const adminTokens = adminDocs.docs.map((doc) => doc.data().token);
+    const userDoc = await admin.firestore().collection('users').doc(user_id).get();
+    const userToken = userDoc.data()!.token;
+
+    const messageTitle = '切り忘れが発生しました';
+    const messageBody = `デバイスID: ${device_id} が切り忘れました`;
+
+    // await Promise.all(adminTokens.map((token) => sendNotification(token, messageTitle, messageBody)));
+    await adminTokens.map((token) => sendNotification(token, messageTitle, messageBody));
+    await sendNotification(userToken, messageTitle, messageBody);
+
+    res.status(200).send('operation success');
+  } catch (error) {
+    functions.logger.error('Error', error);
+    res.status(500).send('Internal Server Error');
+  }
+
+  return;
+});
+
 // テスト用データを挿入
 export const insertTestData = functions.https.onRequest(async (req, res) => {
   // usersコレクション
@@ -145,5 +185,27 @@ export const insertTestData = functions.https.onRequest(async (req, res) => {
     await usersRef.doc(user.user_id).set(user);
   });
 
+  // reservationsコレクション
+  const reservations = [
+    {
+      user_id: '1112',
+      device_id: '1',
+      reservation_time: Timestamp.fromDate(new Date('2023-09-01 10:00:00.000000')),
+      is_ready: false,
+    },
+    {
+      user_id: '1113',
+      device_id: '1',
+      reservation_time: Timestamp.fromDate(new Date('2023-09-02 10:00:00.000000')),
+      is_ready: false,
+    },
+  ];
+
+  const reservationsRef = admin.firestore().collection('reservations');
+  reservations.forEach(async (reservation) => {
+    await reservationsRef.add(reservation);
+  });
+
+  res.end();
   return;
 });
