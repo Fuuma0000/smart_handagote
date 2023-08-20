@@ -115,6 +115,32 @@ class _UserManagementPageState extends State<UserManagementPage> {
                 });
               },
             ),
+            Theme(
+              data: Theme.of(context).copyWith(
+                canvasColor: Constant.darkGray, // 背景色を変更
+              ),
+              child: DropdownButtonFormField<int>(
+                decoration: const InputDecoration(
+                  labelText: '権限',
+                  labelStyle: TextStyle(color: Colors.white),
+                ),
+                style: const TextStyle(color: Colors.white),
+                value: _role,
+                items: _roleOptions.map((option) {
+                  return DropdownMenuItem<int>(
+                    value: option['value'],
+                    child: Text(option['label']),
+                  );
+                }).toList(),
+                onChanged: (int? value) {
+                  setState(() {
+                    if (value != null) {
+                      _role = value;
+                    }
+                  });
+                },
+              ),
+            ),
             ElevatedButton(
               onPressed: () {
                 // ここで学籍番号と新しい role を指定
