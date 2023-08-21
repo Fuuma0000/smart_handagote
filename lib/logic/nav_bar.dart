@@ -29,6 +29,7 @@ class _NavBarState extends State<NavBar> {
   }
 
   /// widget list
+  /// TODO: ここを使用したいクラスに変更する
   final List<Widget> bottomBarPages = [
     const Page1(),
     const Page2(),
