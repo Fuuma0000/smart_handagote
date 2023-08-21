@@ -48,6 +48,7 @@ class _TestLoginPage extends State<TestLoginPage> {
           'name': _name,
           'student_id': _studentId,
           'role': 0,
+          // TODO: 通知用トークンをここに保存
         });
         await prefs.setString('userID', user.uid);
       }
