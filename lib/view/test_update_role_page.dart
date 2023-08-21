@@ -85,59 +85,84 @@ class _UserManagementPageState extends State<UserManagementPage> {
       backgroundColor: Constant.black,
       body: Center(
         // 学籍番号入力と権限選択を追加
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            TextFormField(
-              decoration: const InputDecoration(
-                labelText: '学籍番号',
-                labelStyle: TextStyle(color: Colors.white),
-              ),
-              style: const TextStyle(color: Colors.white),
-              onChanged: (String value) {
-                setState(() {
-                  _studentId = value;
-                });
-              },
-            ),
-            Theme(
-              data: Theme.of(context).copyWith(
-                canvasColor: Constant.darkGray, // 背景色を変更
-              ),
-              child: DropdownButtonFormField<int>(
-                decoration: const InputDecoration(
-                  labelText: '権限',
-                  labelStyle: TextStyle(color: Colors.white),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Container(
+                width: 300, // コンテナの幅を調整
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.white),
+                  borderRadius: BorderRadius.circular(20),
                 ),
-                style: const TextStyle(color: Colors.white),
-                value: _role,
-                items: _roleOptions.map((option) {
-                  return DropdownMenuItem<int>(
-                    value: option['value'],
-                    child: Text(option['label']),
-                  );
-                }).toList(),
-                onChanged: (int? value) {
-                  setState(() {
-                    if (value != null) {
-                      _role = value;
-                    }
-                  });
-                },
+                child: Column(
+                  children: [
+                    TextFormField(
+                      decoration: const InputDecoration(
+                        labelText: '学籍番号',
+                        labelStyle: TextStyle(color: Colors.white),
+                        // border: InputBorder.none, // 枠線を隠す
+                      ),
+                      style: const TextStyle(color: Colors.white),
+                      onChanged: (String value) {
+                        setState(() {
+                          _studentId = value;
+                        });
+                      },
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Theme(
+                      data: Theme.of(context).copyWith(
+                        canvasColor: Constant.darkGray, // 背景色を変更
+                      ),
+                      child: DropdownButtonFormField<int>(
+                        decoration: const InputDecoration(
+                          labelText: '権限',
+                          labelStyle: TextStyle(color: Colors.white),
+                        ),
+                        style: const TextStyle(color: Colors.white),
+                        value: _role,
+                        items: _roleOptions.map((option) {
+                          return DropdownMenuItem<int>(
+                            value: option['value'],
+                            child: Text(option['label']),
+                          );
+                        }).toList(),
+                        onChanged: (int? value) {
+                          setState(() {
+                            if (value != null) {
+                              _role = value;
+                            }
+                          });
+                        },
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        // ここで学籍番号と新しい role を指定
+                        updateUserRoleByStudentId(_studentId, _role);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: Constant.green,
+                      ),
+                      child: const Text('Update User Role'),
+                    ),
+                    // SizedBox(
+                    //   height: 10,
+                    // )
+                  ],
+                ),
               ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                // ここで学籍番号と新しい role を指定
-                updateUserRoleByStudentId(_studentId, _role);
-              },
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white,
-                backgroundColor: Colors.green,
-              ),
-              child: const Text('Update User Role'),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
