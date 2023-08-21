@@ -67,7 +67,7 @@ class _TestReservationPageState extends State<TestReservationPage> {
     }
 
     // 予約一覧をタイムスタンプで昇順にソート
-    // TODO:_TypeError (type 'Null' is not a subtype of type 'Timestamp' of 'other')
+    // TODO:_TypeError (type 'Null' is not a subtype of type 'Timestamp' of 'other')になる発生条件が不明
     reservations.sort((a, b) => a['timestamp'].compareTo(b['timestamp']));
     return reservations;
   }
@@ -81,17 +81,22 @@ class _TestReservationPageState extends State<TestReservationPage> {
     // 予約一覧を整形
     for (QueryDocumentSnapshot doc in snapshot.docs) {
       String userId = doc['user_id'];
-      String deviceId = doc['device_id'];
+      dynamic deviceName;
       // ユーザー名を取得
       DocumentSnapshot userDoc =
           await _firestore.collection('users').doc(userId).get();
-      // はんだごて名を取得
-      DocumentSnapshot deviceDoc =
-          await _firestore.collection('devices').doc(deviceId).get();
+
+      if (doc['device_id'] != null) {
+        String deviceId = doc['device_id'];
+        // はんだごて名を取得
+        DocumentSnapshot deviceDoc =
+            await _firestore.collection('devices').doc(deviceId).get();
+        deviceName = deviceDoc['device_name'];
+      }
+
       // ユーザーが削除されていたらスキップ
       if (userDoc.exists) {
         String userName = userDoc['user_name'];
-        String deviceName = deviceDoc['device_name'];
         if (doc['end_time'] == null) {
           logs.add({
             'logId': doc.id,
@@ -107,7 +112,6 @@ class _TestReservationPageState extends State<TestReservationPage> {
   }
 
   // 予約を作成
-  // TODO: 押した時にlogsのend_timeがnullのやつの数がはんだごての個数以下ならlogsに追加
   Future<void> _makeReservation() async {
     setState(() {
       _isLoadReserving = true;
@@ -121,12 +125,17 @@ class _TestReservationPageState extends State<TestReservationPage> {
         if (await _isAuthorized(user.uid)) {
           // すでに予約している場合は予約不可
           if (await _isReservationAllowed()) {
-            await _firestore.collection('reservations').add({
-              'user_id': user.uid,
-              'timestamp': FieldValue.serverTimestamp(),
-            });
-            if (!mounted) return;
-            DialogHelper.showCustomDialog(context, '予約しました', '');
+            int numberOfLogs = await _getNumberOfLogs();
+            int numberOfDevices = await _getNumberOfDevices();
+
+            if (numberOfLogs < numberOfDevices) {
+              if (!mounted) return;
+              DialogHelper.showCustomDialog(context, '予約せずに使用可能です', '');
+            } else {
+              await _addReservationEntry(user.uid);
+              if (!mounted) return;
+              DialogHelper.showCustomDialog(context, '予約しました', '');
+            }
           }
         }
       } catch (e) {
@@ -203,7 +212,7 @@ class _TestReservationPageState extends State<TestReservationPage> {
           // タイムスタンプがnullの場合はエラーメッセージを表示
           if (timestamp == null || timestamp is! Timestamp) {
             return ListTile(
-              title: Text('${logs[index]['userName']}'),
+              title: Text('ユーザ名: ${logs[index]['userName']}'),
               subtitle: const Text('開始前',
                   style: TextStyle(
                       color: Colors.white)), // Display an error message
@@ -226,7 +235,7 @@ class _TestReservationPageState extends State<TestReservationPage> {
           String statusMessage = logs[index]['isTunrOff'] ? '切り忘れ' : '使用中';
 
           return ListTile(
-            title: Text('${logs[index]['userName']}',
+            title: Text('ユーザ名: ${logs[index]['userName']}',
                 style: const TextStyle(color: Colors.white)),
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -303,6 +312,30 @@ class _TestReservationPageState extends State<TestReservationPage> {
     DialogHelper.showCustomDialog(context, '権限がありません', '');
 
     return false; // 研修前の場合は権限なし
+  }
+
+  // 使用中のログの数を取得
+  Future<int> _getNumberOfLogs() async {
+    QuerySnapshot logsQuerySnapshot = await FirebaseFirestore.instance
+        .collection('logs')
+        .where('end_time', isNull: true)
+        .get();
+    return logsQuerySnapshot.size;
+  }
+
+  // 利用可能なはんだごての数を取得
+  Future<int> _getNumberOfDevices() async {
+    QuerySnapshot devicesQuerySnapshot =
+        await FirebaseFirestore.instance.collection('devices').get();
+    return devicesQuerySnapshot.size;
+  }
+
+  // 新しい予約エントリを追加
+  Future<void> _addReservationEntry(String userId) async {
+    await _firestore.collection('reservations').add({
+      'user_id': userId,
+      'timestamp': FieldValue.serverTimestamp(),
+    });
   }
 
   @override
