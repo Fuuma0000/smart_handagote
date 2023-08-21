@@ -42,7 +42,7 @@ export const startUsing = functions.https.onRequest(async (req, res) => {
     const myLogDoc = await logsCollection.where('user_id', '==', user_id).where('start_time', '==', null).get();
     if (!myLogDoc.empty) {
       const logDocRef = logsCollection.doc(myLogDoc.docs[0].id);
-      await logDocRef.update({ start_time: Timestamp.now() });
+      await logDocRef.update({ device_id: device_id, start_time: Timestamp.now() });
       log_id = myLogDoc.docs[0].id;
     } else {
       // reservationsコレクションのチェック（他の人の予約が来ている場合）
