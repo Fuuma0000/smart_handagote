@@ -63,6 +63,40 @@ class _TestReservationPageState extends State<TestReservationPage> {
     return reservations;
   }
 
+  // TODO: Logsの方から開始前と使用中のユーザーを取得
+  Future<List<Map<String, dynamic>>> _fetchLogsData(
+      QuerySnapshot snapshot) async {
+    // 予約一覧を格納する配列
+    List<Map<String, dynamic>> logs = [];
+
+    // 予約一覧を整形
+    for (QueryDocumentSnapshot doc in snapshot.docs) {
+      String userId = doc['user_id'];
+      String deviceId = doc['device_id'];
+
+      // ユーザー名を取得
+      DocumentSnapshot userDoc =
+          await _firestore.collection('users').doc(userId).get();
+      // はんだごて名を取得
+      DocumentSnapshot deviceDoc =
+          await _firestore.collection('devices').doc(deviceId).get();
+      // ユーザーが削除されていたらスキップ
+      if (userDoc.exists) {
+        String userName = userDoc['name'];
+        String deviceName = deviceDoc['name'];
+        logs.add({
+          'logId': doc.id,
+          'userName': userName,
+          'deviceName': deviceName,
+          'startTime': doc['start_time'],
+          'is_tunr_off': doc['is_turn_off'],
+        });
+      }
+    }
+
+    return logs;
+  }
+
   // 予約を作成
   // TODO: 押した時にlogsのend_timeがnullのやつの数がはんだごての個数以下ならlogsに追加
   Future<void> _makeReservation() async {
