@@ -207,32 +207,22 @@ class _TestReservationPageState extends State<TestReservationPage> {
         itemCount: logs.length,
         itemBuilder: (BuildContext context, int index) {
           // Firestoreから取得したタイムスタンプを変換
-          final dynamic timestamp = logs[index]['startTime'];
-
-          // タイムスタンプがnullの場合はエラーメッセージを表示
-          if (timestamp == null || timestamp is! Timestamp) {
-            return ListTile(
-              title: Text('ユーザ名: ${logs[index]['userName']}'),
-              subtitle: const Text('開始前',
-                  style: TextStyle(
-                      color: Colors.white)), // Display an error message
-              trailing: IconButton(
-                icon: const Icon(Icons.delete, color: Colors.white),
-                onPressed: () {
-                  _cancelLog(
-                      logs[index]['reservationId']); // Cancel reservation
-                },
-              ),
-            );
-          }
-          // タイムスタンプをDateTimeに変換
-          DateTime startTime = logs[index]['startTime'].toDate();
-
-          // 予約時間を指定のフォーマットで表示
-          String formattedTime =
-              DateFormat('yyyy/MM/dd HH:mm').format(startTime);
-
+          final dynamic startTime = logs[index]['startTime'];
           String statusMessage = logs[index]['isTunrOff'] ? '切り忘れ' : '使用中';
+          String timeText = '開始時間: ';
+
+          // startTimeがnullじゃない場合は開始時間を表示
+          if (startTime != null) {
+            // タイムスタンプをDateTimeに変換
+            DateTime startTime = logs[index]['startTime'].toDate();
+
+            // 予約時間を指定のフォーマットで表示
+            String formattedTime =
+                DateFormat('yyyy/MM/dd HH:mm').format(startTime);
+            timeText = '$timeText$formattedTime';
+          } else {
+            timeText = '$timeText未定';
+          }
 
           return ListTile(
             title: Text('ユーザ名: ${logs[index]['userName']}',
@@ -240,7 +230,7 @@ class _TestReservationPageState extends State<TestReservationPage> {
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('開始時間: $formattedTime',
+                Text(timeText,
                     style: const TextStyle(color: Colors.white)), // Start time
                 Text('デバイス名: ${logs[index]['deviceName']}',
                     style: const TextStyle(color: Colors.white)), // Device name
