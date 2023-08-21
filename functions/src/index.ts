@@ -77,12 +77,14 @@ export const endUsing = functions.https.onRequest(async (req, res) => {
   try {
     const { log_id } = req.body;
 
+    const logsCollection = await admin.firestore().collection('logs');
+
     // logsコレクションのend_timeを更新
-    const logRef = admin.firestore().collection('logs').doc(log_id);
+    const logRef = logsCollection.doc(log_id);
     await logRef.update({ end_time: Timestamp.now() });
 
     // 一番古い予約を取得
-    const reservationDoc = await admin.firestore().collection('reservations').where('is_ready', '==', false).orderBy('reservation_time', 'asc').limit(1).get();
+    const reservationDoc = await admin.firestore().collection('reservations').orderBy('reservation_time', 'asc').limit(1).get();
 
     if (reservationDoc.empty) {
       res.status(200).send('success: no reservation');
@@ -90,14 +92,21 @@ export const endUsing = functions.https.onRequest(async (req, res) => {
     }
 
     const nextReservationData = reservationDoc.docs[0].data();
-    const nextReservationId = reservationDoc.docs[0].id;
+    const device_id = (await logRef.get()).data()!.device_id;
 
-    await admin.firestore().collection('reservations').doc(nextReservationId).update({ is_ready: true });
+    // 次の順番の人をlogsコレクションに追加
+    const logData = {
+      user_id: nextReservationData.user_id,
+      device_id: device_id,
+      start_time: null,
+      end_time: null,
+      is_turn_off: false,
+    };
+    await logsCollection.add(logData);
 
     // 通知を送信
     const userDoc = await admin.firestore().collection('users').doc(nextReservationData.user_id).get();
     const userToken = userDoc.data()!.token;
-    const device_id = (await logRef.get()).data()!.device_id;
     const messageTitle = '予約の順番が来ました';
     const messageBody = `デバイスID: ${device_id} が使用可能です`;
 
@@ -191,14 +200,7 @@ export const insertTestData = functions.https.onRequest(async (req, res) => {
   const reservations = [
     {
       user_id: '1112',
-      device_id: '1',
       reservation_time: Timestamp.fromDate(new Date('2023-09-01 10:00:00.000000')),
-      is_ready: false,
-    },
-    {
-      user_id: '1113',
-      device_id: '1',
-      reservation_time: Timestamp.fromDate(new Date('2023-09-02 10:00:00.000000')),
       is_ready: false,
     },
   ];
@@ -207,6 +209,16 @@ export const insertTestData = functions.https.onRequest(async (req, res) => {
   reservations.forEach(async (reservation) => {
     await reservationsRef.add(reservation);
   });
+
+  const logs = {
+    user_id: '1111',
+    device_id: 'device_1',
+    start_time: Timestamp.fromDate(new Date('2021-09-01 10:00:00.000000')),
+    end_time: null,
+    is_turn_off: false,
+  };
+  const logsRef = admin.firestore().collection('logs');
+  await logsRef.add(logs);
 
   res.end();
   return;
