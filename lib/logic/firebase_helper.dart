@@ -117,4 +117,43 @@ class FirebaseHelper {
   Future<void> updateRole(String userId, int newRole) async {
     await _firestore.collection('users').doc(userId).update({'role': newRole});
   }
+
+  // 学籍番号が被らないかチェックする関数
+  Future<bool> isStudentIdUnique(String studentId) async {
+    QuerySnapshot querySnapshot = await _firestore
+        .collection('users')
+        .where('student_id', isEqualTo: studentId)
+        .get();
+    if (querySnapshot.size > 0) {
+      // 学籍番号が被っていたら false を返す
+      return false;
+    }
+    // 学籍番号が被っていなかったら true を返す
+    return true;
+  }
+
+  // メールアドレスが被らないかチェックする関数
+  Future<bool> isEmailUnique(String email) async {
+    QuerySnapshot querySnapshot = await _firestore
+        .collection('users')
+        .where('email', isEqualTo: email)
+        .get();
+    if (querySnapshot.size > 0) {
+      // メールアドレスが被っていたら false を返す
+      return false;
+    }
+    // メールアドレスが被っていなかったら true を返す
+    return true;
+  }
+
+  // Firestore にユーザー情報を保存する関数
+  Future<void> saveUserInfo(
+      String userId, String name, String studentId) async {
+    await _firestore.collection('users').doc(userId).set({
+      'user_name': name,
+      'student_id': studentId,
+      'role': 0,
+      // TODO: 通知用トークンをここに保存
+    });
+  }
 }

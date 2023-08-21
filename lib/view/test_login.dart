@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../logic/firebase_helper.dart';
 import 'components/dialog.dart';
 
 class TestLoginPage extends StatefulWidget {
@@ -31,24 +32,19 @@ class _TestLoginPage extends State<TestLoginPage> {
     });
     try {
       // 学籍番号が被らないかチェック
-      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection('users')
-          .where('student_id', isEqualTo: _studentId)
-          .get();
+      bool isStudentIdUnique =
+          await FirebaseHelper().isStudentIdUnique(_studentId);
       // 学籍番号が被っていたら処理を終了
-      if (querySnapshot.size > 0) {
+      if (!isStudentIdUnique) {
         if (!mounted) return;
         DialogHelper.showCustomDialog(context, '学籍番号が被っています', '学籍番号を確認してください');
         return;
       }
 
       // メールアドレスが被らないかチェック
-      querySnapshot = await FirebaseFirestore.instance
-          .collection('users')
-          .where('email', isEqualTo: _email)
-          .get();
+      bool isEmailUnique = await FirebaseHelper().isEmailUnique(_email);
       // メールアドレスが被っていたら処理を終了
-      if (querySnapshot.size > 0) {
+      if (!isEmailUnique) {
         if (!mounted) return;
         DialogHelper.showCustomDialog(
             context, 'メールアドレスが被っています', 'メールアドレスを確認してください');
@@ -62,12 +58,7 @@ class _TestLoginPage extends State<TestLoginPage> {
           .user;
       // ユーザー登録に成功したら Firestore にユーザー情報を保存
       if (user != null) {
-        await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
-          'user_name': _name,
-          'student_id': _studentId,
-          'role': 0,
-          // TODO: 通知用トークンをここに保存
-        });
+        await FirebaseHelper().saveUserInfo(user.uid, _name, _studentId);
         if (!mounted) return;
         DialogHelper.showCustomDialog(context, 'ユーザー登録しました', '');
       }
