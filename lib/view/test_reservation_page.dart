@@ -25,10 +25,18 @@ class _TestReservationPageState extends State<TestReservationPage> {
     _logsStream = _firestore.collection('logs').snapshots();
   }
 
-  // キャンセルボタンを押したときの処理
+  // Reservationのキャンセル処理
   Future<void> _cancelReservation(String reservationId) async {
     // 予約を削除
     await _firestore.collection('reservations').doc(reservationId).delete();
+    if (!mounted) return;
+    DialogHelper.showCustomDialog(context, '予約をキャンセルしました', '');
+  }
+
+  //logsのキャンセル処理
+  Future<void> _cancelLog(String logId) async {
+    // 予約を削除
+    await _firestore.collection('logs').doc(logId).delete();
     if (!mounted) return;
     DialogHelper.showCustomDialog(context, '予約をキャンセルしました', '');
   }
@@ -48,7 +56,6 @@ class _TestReservationPageState extends State<TestReservationPage> {
           await _firestore.collection('users').doc(userId).get();
       // ユーザーが存在していたら予約一覧に追加
       if (userDoc.exists) {
-        print(userDoc['user_name']);
         String userName = userDoc['user_name'];
         reservations.add({
           'reservationId': doc.id,
@@ -64,7 +71,7 @@ class _TestReservationPageState extends State<TestReservationPage> {
     return reservations;
   }
 
-  // TODO: Logsの方から開始前と使用中のユーザーを取得
+  // Logsの方から開始前と使用中のユーザーを取得
   Future<List<Map<String, dynamic>>> _fetchLogsData(
       QuerySnapshot snapshot) async {
     // 予約一覧を格納する配列
@@ -74,7 +81,6 @@ class _TestReservationPageState extends State<TestReservationPage> {
     for (QueryDocumentSnapshot doc in snapshot.docs) {
       String userId = doc['user_id'];
       String deviceId = doc['device_id'];
-
       // ユーザー名を取得
       DocumentSnapshot userDoc =
           await _firestore.collection('users').doc(userId).get();
@@ -85,16 +91,17 @@ class _TestReservationPageState extends State<TestReservationPage> {
       if (userDoc.exists) {
         String userName = userDoc['user_name'];
         String deviceName = deviceDoc['device_name'];
-        logs.add({
-          'logId': doc.id,
-          'userName': userName,
-          'deviceName': deviceName,
-          'startTime': doc['start_time'],
-          'is_tunr_off': doc['is_turn_off'],
-        });
+        if (doc['end_time'] == null) {
+          logs.add({
+            'logId': doc.id,
+            'userName': userName,
+            'deviceName': deviceName,
+            'startTime': doc['start_time'],
+            'isTunrOff': doc['is_turn_off'],
+          });
+        }
       }
     }
-
     return logs;
   }
 
@@ -180,6 +187,60 @@ class _TestReservationPageState extends State<TestReservationPage> {
     );
   }
 
+  // 使用中一覧を表示するウィジェット
+  Widget _buildLogList(List<Map<String, dynamic>> logs) {
+    return Expanded(
+      child: ListView.builder(
+        itemCount: logs.length,
+        itemBuilder: (BuildContext context, int index) {
+          // Firestoreから取得したタイムスタンプを変換
+          final dynamic timestamp = logs[index]['startTime'];
+
+          // タイムスタンプがnullの場合はエラーメッセージを表示
+          if (timestamp == null || timestamp is! Timestamp) {
+            return ListTile(
+              title: Text('${logs[index]['userName']}'),
+              subtitle: const Text('開始前'), // Display an error message
+              trailing: IconButton(
+                icon: const Icon(Icons.delete),
+                onPressed: () {
+                  _cancelLog(
+                      logs[index]['reservationId']); // Cancel reservation
+                },
+              ),
+            );
+          }
+          // タイムスタンプをDateTimeに変換
+          DateTime startTime = logs[index]['startTime'].toDate();
+
+          // 予約時間を指定のフォーマットで表示
+          String formattedTime =
+              DateFormat('yyyy/MM/dd HH:mm').format(startTime);
+
+          String statusMessage = logs[index]['isTunrOff'] ? '切り忘れ' : '使用中';
+
+          return ListTile(
+            title: Text('${logs[index]['userName']}'),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('開始時間: $formattedTime'), // Start time
+                Text('デバイス名: ${logs[index]['deviceName']}'), // Device name
+                Text('ステータス: $statusMessage'), // Status message
+              ],
+            ),
+            trailing: IconButton(
+              icon: const Icon(Icons.delete),
+              onPressed: () {
+                _cancelLog(logs[index]['logId']); // Cancel reservation
+              },
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   // 予約可能かどうかをチェックする関数
   Future<bool> _isReservationAllowed() async {
     // 現在ログインしているユーザーを取得
@@ -251,37 +312,37 @@ class _TestReservationPageState extends State<TestReservationPage> {
 
             const SizedBox(height: 20),
             const Text('使用中一覧'),
-            // StreamBuilder<QuerySnapshot>(
-            //   stream: _logsStream, // リアルタイムで予約データを取得するストリーム
-            //   builder: (BuildContext context,
-            //       AsyncSnapshot<QuerySnapshot> snapshot) {
-            //     if (snapshot.hasError) {
-            //       return Text(
-            //           'エラー: ${snapshot.error}'); // エラーが発生した場合にエラーメッセージを表示
-            //     }
+            StreamBuilder<QuerySnapshot>(
+              stream: _logsStream, // リアルタイムで予約データを取得するストリーム
+              builder: (BuildContext context,
+                  AsyncSnapshot<QuerySnapshot> snapshot) {
+                if (snapshot.hasError) {
+                  return Text(
+                      'エラー: ${snapshot.error}'); // エラーが発生した場合にエラーメッセージを表示
+                }
 
-            //     if (snapshot.connectionState == ConnectionState.waiting) {
-            //       return const CircularProgressIndicator(); // データがロード中の間、進行中のインジケータを表示
-            //     }
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const CircularProgressIndicator(); // データがロード中の間、進行中のインジケータを表示
+                }
 
-            //     return FutureBuilder<List<Map<String, dynamic>>>(
-            //       future:
-            //           _fetchLogsData(snapshot.data!), // スナップショットから予約データを非同期で取得
-            //       builder: (BuildContext context,
-            //           AsyncSnapshot<List<Map<String, dynamic>>> dataSnapshot) {
-            //         if (dataSnapshot.connectionState ==
-            //             ConnectionState.waiting) {
-            //           return const CircularProgressIndicator(); // データがロード中の間、進行中のインジケータを表示
-            //         }
+                return FutureBuilder<List<Map<String, dynamic>>>(
+                  future:
+                      _fetchLogsData(snapshot.data!), // スナップショットから予約データを非同期で取得
+                  builder: (BuildContext context,
+                      AsyncSnapshot<List<Map<String, dynamic>>> dataSnapshot) {
+                    if (dataSnapshot.connectionState ==
+                        ConnectionState.waiting) {
+                      return const CircularProgressIndicator(); // データがロード中の間、進行中のインジケータを表示
+                    }
 
-            //         List<Map<String, dynamic>> logs =
-            //             dataSnapshot.data ?? []; // ロードされた予約データ
+                    List<Map<String, dynamic>> logs =
+                        dataSnapshot.data ?? []; // ロードされた予約データ
 
-            //         return _buildLogList(logs); // 予約データを表示するウィジェットを返す
-            //       },
-            //     );
-            //   },
-            // ),
+                    return _buildLogList(logs); // 予約データを表示するウィジェットを返す
+                  },
+                );
+              },
+            ),
             const Text('予約一覧'),
             // StreamBuilder で Firestore のデータを監視
             StreamBuilder<QuerySnapshot>(
