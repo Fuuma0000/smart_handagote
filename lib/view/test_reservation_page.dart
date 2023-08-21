@@ -50,14 +50,10 @@ class _TestReservationPageState extends State<TestReservationPage> {
 
     // 予約一覧を整形
     for (QueryDocumentSnapshot doc in snapshot.docs) {
-      String userId = doc['user_id'];
-
       // ユーザー名を取得
-      DocumentSnapshot userDoc =
-          await _firestore.collection('users').doc(userId).get();
+      String userName = await _getUserName(doc['user_id']);
       // ユーザーが存在していたら予約一覧に追加
-      if (userDoc.exists) {
-        String userName = userDoc['user_name'];
+      if (userName != '') {
         reservations.add({
           'reservationId': doc.id,
           'timestamp': doc['timestamp'],
@@ -80,11 +76,9 @@ class _TestReservationPageState extends State<TestReservationPage> {
 
     // 予約一覧を整形
     for (QueryDocumentSnapshot doc in snapshot.docs) {
-      String userId = doc['user_id'];
       dynamic deviceName;
       // ユーザー名を取得
-      DocumentSnapshot userDoc =
-          await _firestore.collection('users').doc(userId).get();
+      String userName = await _getUserName(doc['user_id']);
 
       if (doc['device_id'] != null) {
         String deviceId = doc['device_id'];
@@ -95,8 +89,7 @@ class _TestReservationPageState extends State<TestReservationPage> {
       }
 
       // ユーザーが削除されていたらスキップ
-      if (userDoc.exists) {
-        String userName = userDoc['user_name'];
+      if (userName != '') {
         if (doc['end_time'] == null) {
           logs.add({
             'logId': doc.id,
@@ -208,7 +201,10 @@ class _TestReservationPageState extends State<TestReservationPage> {
         itemBuilder: (BuildContext context, int index) {
           // Firestoreから取得したタイムスタンプを変換
           final dynamic startTime = logs[index]['startTime'];
-          String statusMessage = logs[index]['isTunrOff'] ? '切り忘れ' : '使用中';
+          // String statusMessage = logs[index]['isTunrOff'] ? '切り忘れ' : '使用中';
+          String statusMessage = startTime != null
+              ? (logs[index]['isTunrOff'] ? '切り忘れ' : '使用中')
+              : '開始前';
           String timeText = '開始時間: ';
 
           // startTimeがnullじゃない場合は開始時間を表示
@@ -326,6 +322,26 @@ class _TestReservationPageState extends State<TestReservationPage> {
       'user_id': userId,
       'timestamp': FieldValue.serverTimestamp(),
     });
+  }
+
+  // ユーザ名を取得する関数
+  Future<String> _getUserName(String userId) async {
+    DocumentSnapshot userDoc =
+        await _firestore.collection('users').doc(userId).get();
+    if (userDoc.exists) {
+      return userDoc['user_name'];
+    }
+    return '';
+  }
+
+  // デバイス名を取得する関数
+  Future<String> _getDeviceName(String deviceId) async {
+    DocumentSnapshot deviceDoc =
+        await _firestore.collection('devices').doc(deviceId).get();
+    if (deviceDoc.exists) {
+      return deviceDoc['device_name'];
+    }
+    return '';
   }
 
   @override
