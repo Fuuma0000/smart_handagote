@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../constant.dart';
+import 'components/dialog.dart';
 
 class UserManagementPage extends StatefulWidget {
   const UserManagementPage({super.key});
@@ -30,7 +31,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
       final User? user = FirebaseAuth.instance.currentUser;
       if (user == null) {
         // ダイアログを表示
-        await _showDialog('ログインしていません', 'ログインしてください');
+        DialogHelper.showCustomDialog(context, 'ログインしていません', 'メッセージ');
         return;
       }
       // 自分のドキュメントを取得
@@ -39,7 +40,8 @@ class _UserManagementPageState extends State<UserManagementPage> {
       // 管理者権限がない場合は処理を終了
       if (userDoc['role'] != 2) {
         // ダイアログを表示
-        await _showDialog('管理者権限がありません', '管理者に連絡してください');
+        if (!mounted) return;
+        DialogHelper.showCustomDialog(context, '管理者権限がありません', '管理者に連絡してください');
         return;
       }
 
@@ -52,7 +54,8 @@ class _UserManagementPageState extends State<UserManagementPage> {
       // 学籍番号が見つからない場合は処理を終了
       if (querySnapshot.size == 0) {
         // ダイアログを表示
-        await _showDialog('学籍番号が見つかりません', '学籍番号を確認してください');
+        if (!mounted) return;
+        DialogHelper.showCustomDialog(context, '学籍番号が見つかりません', '学籍番号を確認してください');
         return;
       }
 
@@ -65,41 +68,15 @@ class _UserManagementPageState extends State<UserManagementPage> {
           .doc(userId)
           .update({'role': newRole});
       // ダイアログを表示
-      await _showDialog(
-          '権限を更新しました', _roleOptions[newRole]['label'] + ' に更新しました');
+      if (!mounted) return;
+      DialogHelper.showCustomDialog(
+          context, '権限を更新しました', _roleOptions[newRole]['label'] + ' に更新しました');
     } catch (e) {
       // ダイアログを表示
-      await _showDialog('エラー', '権限の更新に失敗しました');
+      if (!mounted) return;
+      DialogHelper.showCustomDialog(context, 'エラー', '権限の更新に失敗しました');
       print('Error updating user role: $e');
     }
-  }
-
-  // ダイアログを表示する関数
-  Future<void> _showDialog(String title, String message) async {
-    await showDialog(
-      context: context,
-      builder: (_) {
-        return AlertDialog(
-          title: Text(
-            title,
-            style: const TextStyle(color: Colors.white), // タイトルの色を白に設定
-          ),
-          content: Text(
-            message,
-            style: const TextStyle(color: Colors.white), // メッセージの色を白に設定
-          ),
-          backgroundColor: Constant.darkGray, // ダイアログの背景色をダークグレーに設定
-          actions: <Widget>[
-            TextButton(
-              child: const Text('OK', style: TextStyle(color: Colors.green)),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override
