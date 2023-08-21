@@ -16,6 +16,8 @@ class _TestLoginPage extends State<TestLoginPage> {
   String _studentId = '';
   String _email = '';
   String _password = '';
+  bool _isLoadSigningIn = false; // 処理中かどうかを管理するフラグ
+  bool _isLoadingLoggingIn = false; // 処理中かどうかを管理するフラグ
 
   @override
   void initState() {
@@ -24,6 +26,9 @@ class _TestLoginPage extends State<TestLoginPage> {
 
   // ユーザー登録の処理
   Future<void> registerUser() async {
+    setState(() {
+      _isLoadSigningIn = true;
+    });
     try {
       // 学籍番号が被らないかチェック
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
@@ -70,11 +75,18 @@ class _TestLoginPage extends State<TestLoginPage> {
       if (!mounted) return;
       DialogHelper.showCustomDialog(context, 'エラー', '');
       print(e);
+    } finally {
+      setState(() {
+        _isLoadSigningIn = false; // 処理完了後に処理中フラグをfalseにセット
+      });
     }
   }
 
   // ログインの処理
   Future<void> loginUser() async {
+    setState(() {
+      _isLoadingLoggingIn = true;
+    });
     try {
       // ログイン
       final User? user = (await FirebaseAuth.instance
@@ -89,6 +101,10 @@ class _TestLoginPage extends State<TestLoginPage> {
       if (!mounted) return;
       DialogHelper.showCustomDialog(context, 'エラー', '');
       print(e);
+    } finally {
+      setState(() {
+        _isLoadingLoggingIn = false; // 処理完了後に処理中フラグをfalseにセット
+      });
     }
   }
 
@@ -135,12 +151,16 @@ class _TestLoginPage extends State<TestLoginPage> {
                 },
               ),
               ElevatedButton(
-                child: const Text('ユーザ登録'),
-                onPressed: () => registerUser(),
+                onPressed: _isLoadSigningIn ? null : () => registerUser(),
+                child: _isLoadSigningIn // 処理中フラグに基づいてボタンの表示を切り替え
+                    ? const CircularProgressIndicator() // グルグル回るアニメーション
+                    : const Text('ユーザ登録'), // 処理中の場合はボタンを無効に
               ),
               ElevatedButton(
-                child: const Text('ログイン'),
-                onPressed: () => loginUser(),
+                onPressed: _isLoadingLoggingIn ? null : () => loginUser(),
+                child: _isLoadingLoggingIn // 処理中フラグに基づいてボタンの表示を切り替え
+                    ? const CircularProgressIndicator() // グルグル回るアニメーション
+                    : const Text('ログイン'), // 処理中の場合はボタンを無効に
               ),
             ],
           ),
