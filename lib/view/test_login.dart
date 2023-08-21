@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'components/dialog.dart';
+
 class TestLoginPage extends StatefulWidget {
   const TestLoginPage({Key? key}) : super(key: key);
 
@@ -36,7 +38,8 @@ class _TestLoginPage extends State<TestLoginPage> {
           .where('student_id', isEqualTo: _studentId)
           .get();
       if (querySnapshot.size > 0) {
-        print('学籍番号が被っています');
+        if (!mounted) return;
+        DialogHelper.showCustomDialog(context, '学籍番号が被っています', '学籍番号を確認してください');
         return;
       }
       final User? user = (await FirebaseAuth.instance
@@ -50,9 +53,13 @@ class _TestLoginPage extends State<TestLoginPage> {
           'role': 0,
           // TODO: 通知用トークンをここに保存
         });
+        if (!mounted) return;
+        DialogHelper.showCustomDialog(context, 'ユーザー登録しました', '');
         await prefs.setString('userID', user.uid);
       }
     } catch (e) {
+      if (!mounted) return;
+      DialogHelper.showCustomDialog(context, 'エラー', '');
       print(e);
     }
   }
@@ -63,9 +70,12 @@ class _TestLoginPage extends State<TestLoginPage> {
               .signInWithEmailAndPassword(email: _email, password: _password))
           .user;
       if (user != null) {
-        print("ログイン成功");
+        if (!mounted) return;
+        DialogHelper.showCustomDialog(context, 'ログインしました', '');
       }
     } catch (e) {
+      if (!mounted) return;
+      DialogHelper.showCustomDialog(context, 'エラー', '');
       print(e);
     }
   }
