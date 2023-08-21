@@ -146,7 +146,6 @@ class _TestReservationPageState extends State<TestReservationPage> {
   }
 
   // 予約可能かどうかをチェックする関数
-  // TODO: logsの方も確認する
   Future<bool> _isReservationAllowed() async {
     // 現在ログインしているユーザーを取得
     final User? user = FirebaseAuth.instance.currentUser;
