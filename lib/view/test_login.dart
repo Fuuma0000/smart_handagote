@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'components/dialog.dart';
 
@@ -18,16 +17,9 @@ class _TestLoginPage extends State<TestLoginPage> {
   String _email = '';
   String _password = '';
 
-  late SharedPreferences prefs;
-
   @override
   void initState() {
     super.initState();
-    initializeSharedPreferences();
-  }
-
-  Future<void> initializeSharedPreferences() async {
-    prefs = await SharedPreferences.getInstance();
   }
 
   Future<void> registerUser() async {
@@ -55,7 +47,6 @@ class _TestLoginPage extends State<TestLoginPage> {
         });
         if (!mounted) return;
         DialogHelper.showCustomDialog(context, 'ユーザー登録しました', '');
-        await prefs.setString('userID', user.uid);
       }
     } catch (e) {
       if (!mounted) return;
