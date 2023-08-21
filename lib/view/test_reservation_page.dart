@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:smart_handagote/logic/firebase_helper.dart';
 
 import '../constant.dart';
 import 'components/dialog.dart';
@@ -29,15 +30,15 @@ class _TestReservationPageState extends State<TestReservationPage> {
   // Reservationのキャンセル処理
   Future<void> _cancelReservation(String reservationId) async {
     // 予約を削除
-    await _firestore.collection('reservations').doc(reservationId).delete();
+    await FirebaseHelper().cancelReservation(reservationId);
     if (!mounted) return;
     DialogHelper.showCustomDialog(context, '予約をキャンセルしました', '');
   }
 
-  //logsのキャンセル処理
+  // logsのキャンセル処理
   Future<void> _cancelLog(String logId) async {
     // 予約を削除
-    await _firestore.collection('logs').doc(logId).delete();
+    await FirebaseHelper().cancelLog(logId);
     if (!mounted) return;
     DialogHelper.showCustomDialog(context, '予約をキャンセルしました', '');
   }
@@ -51,7 +52,7 @@ class _TestReservationPageState extends State<TestReservationPage> {
     // 予約一覧を整形
     for (QueryDocumentSnapshot doc in snapshot.docs) {
       // ユーザー名を取得
-      String userName = await _getUserName(doc['user_id']);
+      String userName = await FirebaseHelper().getUserName(doc['user_id']);
       // ユーザーが存在していたら予約一覧に追加
       if (userName != '') {
         reservations.add({
@@ -78,14 +79,11 @@ class _TestReservationPageState extends State<TestReservationPage> {
     for (QueryDocumentSnapshot doc in snapshot.docs) {
       dynamic deviceName;
       // ユーザー名を取得
-      String userName = await _getUserName(doc['user_id']);
+      String userName = await FirebaseHelper().getUserName(doc['user_id']);
 
       if (doc['device_id'] != null) {
-        String deviceId = doc['device_id'];
         // はんだごて名を取得
-        DocumentSnapshot deviceDoc =
-            await _firestore.collection('devices').doc(deviceId).get();
-        deviceName = deviceDoc['device_name'];
+        deviceName = await FirebaseHelper().getDeviceName(doc['device_id']);
       }
 
       // ユーザーが削除されていたらスキップ
@@ -118,14 +116,14 @@ class _TestReservationPageState extends State<TestReservationPage> {
         if (await _isAuthorized(user.uid)) {
           // すでに予約している場合は予約不可
           if (await _isReservationAllowed()) {
-            int numberOfLogs = await _getNumberOfLogs();
-            int numberOfDevices = await _getNumberOfDevices();
+            int numberOfLogs = await FirebaseHelper().getNumberOfLogs();
+            int numberOfDevices = await FirebaseHelper().getNumberOfDevices();
 
             if (numberOfLogs < numberOfDevices) {
               if (!mounted) return;
               DialogHelper.showCustomDialog(context, '予約せずに使用可能です', '');
             } else {
-              await _addReservationEntry(user.uid);
+              await FirebaseHelper().addReservationEntry(user.uid);
               if (!mounted) return;
               DialogHelper.showCustomDialog(context, '予約しました', '');
             }
@@ -201,7 +199,6 @@ class _TestReservationPageState extends State<TestReservationPage> {
         itemBuilder: (BuildContext context, int index) {
           // Firestoreから取得したタイムスタンプを変換
           final dynamic startTime = logs[index]['startTime'];
-          // String statusMessage = logs[index]['isTunrOff'] ? '切り忘れ' : '使用中';
           String statusMessage = startTime != null
               ? (logs[index]['isTunrOff'] ? '切り忘れ' : '使用中')
               : '開始前';
@@ -258,24 +255,17 @@ class _TestReservationPageState extends State<TestReservationPage> {
     }
 
     // logのコレクションにuser_idが一致して、start_timeとent_timeがnullのドキュメントがあるか検索
-    QuerySnapshot logsQuerySnapshot = await FirebaseFirestore.instance
-        .collection('logs')
-        .where('user_id', isEqualTo: user.uid)
-        .where('start_time', isNull: true)
-        .where('end_time', isNull: true)
-        .get();
-    if (logsQuerySnapshot.size > 0) {
+    bool isLogExists = await FirebaseHelper().isLogExists(user.uid);
+    if (isLogExists) {
       if (!mounted) return false;
       DialogHelper.showCustomDialog(context, '開始前です', '');
       return false;
     }
 
     // reservationsのコレクションにuser_idが一致するドキュメントがあるか検索
-    QuerySnapshot reservationsQuerySnapshot = await FirebaseFirestore.instance
-        .collection('reservations')
-        .where('user_id', isEqualTo: user.uid)
-        .get();
-    if (reservationsQuerySnapshot.size > 0) {
+    bool isReservationExists =
+        await FirebaseHelper().isReservationExists(user.uid);
+    if (isReservationExists) {
       if (!mounted) return false;
       DialogHelper.showCustomDialog(context, 'すでに予約しています', '');
       return false;
@@ -286,62 +276,13 @@ class _TestReservationPageState extends State<TestReservationPage> {
   // 権限があるかどうかをチェックする関数
   Future<bool> _isAuthorized(userId) async {
     // ユーザーの権限を取得
-    DocumentSnapshot userDoc =
-        await _firestore.collection('users').doc(userId).get();
-    if (userDoc.exists) {
-      int role = userDoc['role'];
-      if (role == 1 || role == 2) {
-        return true; // 研修終了と管理者の場合は権限あり
-      }
+    int role = await FirebaseHelper().getUserRole(userId);
+    if (role == 1 || role == 2) {
+      return true; // 研修終了と管理者の場合は権限あり
     }
     if (!mounted) return false;
     DialogHelper.showCustomDialog(context, '権限がありません', '');
-
     return false; // 研修前の場合は権限なし
-  }
-
-  // 使用中のログの数を取得
-  Future<int> _getNumberOfLogs() async {
-    QuerySnapshot logsQuerySnapshot = await FirebaseFirestore.instance
-        .collection('logs')
-        .where('end_time', isNull: true)
-        .get();
-    return logsQuerySnapshot.size;
-  }
-
-  // 利用可能なはんだごての数を取得
-  Future<int> _getNumberOfDevices() async {
-    QuerySnapshot devicesQuerySnapshot =
-        await FirebaseFirestore.instance.collection('devices').get();
-    return devicesQuerySnapshot.size;
-  }
-
-  // 新しい予約エントリを追加
-  Future<void> _addReservationEntry(String userId) async {
-    await _firestore.collection('reservations').add({
-      'user_id': userId,
-      'timestamp': FieldValue.serverTimestamp(),
-    });
-  }
-
-  // ユーザ名を取得する関数
-  Future<String> _getUserName(String userId) async {
-    DocumentSnapshot userDoc =
-        await _firestore.collection('users').doc(userId).get();
-    if (userDoc.exists) {
-      return userDoc['user_name'];
-    }
-    return '';
-  }
-
-  // デバイス名を取得する関数
-  Future<String> _getDeviceName(String deviceId) async {
-    DocumentSnapshot deviceDoc =
-        await _firestore.collection('devices').doc(deviceId).get();
-    if (deviceDoc.exists) {
-      return deviceDoc['device_name'];
-    }
-    return '';
   }
 
   @override
