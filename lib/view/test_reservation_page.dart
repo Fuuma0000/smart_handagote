@@ -156,6 +156,19 @@ class _TestReservationPageState extends State<TestReservationPage> {
       return false; // ユーザーがログインしていない場合は予約不可
     }
 
+    // logのコレクションにuser_idが一致して、start_timeとent_timeがnullのドキュメントがあるか検索
+    QuerySnapshot logsQuerySnapshot = await FirebaseFirestore.instance
+        .collection('logs')
+        .where('user_id', isEqualTo: user.uid)
+        .where('start_time', isNull: true)
+        .where('end_time', isNull: true)
+        .get();
+    if (logsQuerySnapshot.size > 0) {
+      if (!mounted) return false;
+      DialogHelper.showCustomDialog(context, '開始前です', '');
+      return false;
+    }
+
     // reservationsのコレクションにuser_idが一致するドキュメントがあるか検索
     QuerySnapshot reservationsQuerySnapshot = await FirebaseFirestore.instance
         .collection('reservations')
