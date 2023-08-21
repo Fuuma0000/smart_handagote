@@ -23,6 +23,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
     {'value': 2, 'label': '管理者'},
   ];
 
+  // ユーザーの role を更新する関数
   Future<void> updateUserRoleByStudentId(String studentId, int newRole) async {
     try {
       // 自分がに管理者の権限があるかチェック
