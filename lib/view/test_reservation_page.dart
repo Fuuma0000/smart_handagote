@@ -15,12 +15,14 @@ class TestReservationPage extends StatefulWidget {
 class _TestReservationPageState extends State<TestReservationPage> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   late Stream<QuerySnapshot> _reservationsStream;
+  late Stream<QuerySnapshot> _logsStream;
   bool _isLoadReserving = false; // 予約中かどうかを管理するフラグ
 
   @override
   void initState() {
     super.initState();
     _reservationsStream = _firestore.collection('reservations').snapshots();
+    _logsStream = _firestore.collection('logs').snapshots();
   }
 
   // キャンセルボタンを押したときの処理
@@ -44,7 +46,7 @@ class _TestReservationPageState extends State<TestReservationPage> {
       // ユーザー名を取得
       DocumentSnapshot userDoc =
           await _firestore.collection('users').doc(userId).get();
-      // ユーザーが削除されていたらスキップ
+      // ユーザーが存在していたら予約一覧に追加
       if (userDoc.exists) {
         String userName = userDoc['name'];
         reservations.add({
@@ -60,8 +62,6 @@ class _TestReservationPageState extends State<TestReservationPage> {
     reservations.sort((a, b) => a['timestamp'].compareTo(b['timestamp']));
     return reservations;
   }
-
-  // Logsの方から現在使用中
 
   // 予約を作成
   // TODO: 押した時にlogsのend_timeがnullのやつの数がはんだごての個数以下ならlogsに追加
@@ -145,6 +145,8 @@ class _TestReservationPageState extends State<TestReservationPage> {
     );
   }
 
+  // 使用中一覧を表示するウィジェット
+
   // 予約可能かどうかをチェックする関数
   Future<bool> _isReservationAllowed() async {
     // 現在ログインしているユーザーを取得
@@ -215,6 +217,38 @@ class _TestReservationPageState extends State<TestReservationPage> {
             ),
 
             const SizedBox(height: 20),
+            const Text('使用中一覧'),
+            StreamBuilder<QuerySnapshot>(
+              stream: _logsStream, // リアルタイムで予約データを取得するストリーム
+              builder: (BuildContext context,
+                  AsyncSnapshot<QuerySnapshot> snapshot) {
+                if (snapshot.hasError) {
+                  return Text(
+                      'エラー: ${snapshot.error}'); // エラーが発生した場合にエラーメッセージを表示
+                }
+
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const CircularProgressIndicator(); // データがロード中の間、進行中のインジケータを表示
+                }
+
+                return FutureBuilder<List<Map<String, dynamic>>>(
+                  future:
+                      _fetchLogsData(snapshot.data!), // スナップショットから予約データを非同期で取得
+                  builder: (BuildContext context,
+                      AsyncSnapshot<List<Map<String, dynamic>>> dataSnapshot) {
+                    if (dataSnapshot.connectionState ==
+                        ConnectionState.waiting) {
+                      return const CircularProgressIndicator(); // データがロード中の間、進行中のインジケータを表示
+                    }
+
+                    List<Map<String, dynamic>> logs =
+                        dataSnapshot.data ?? []; // ロードされた予約データ
+
+                    return _buildLogList(logs); // 予約データを表示するウィジェットを返す
+                  },
+                );
+              },
+            ),
             const Text('予約一覧'),
             // StreamBuilder で Firestore のデータを監視
             StreamBuilder<QuerySnapshot>(
