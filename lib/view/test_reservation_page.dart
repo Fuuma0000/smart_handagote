@@ -42,11 +42,9 @@ class _TestReservationPageState extends State<TestReservationPage> {
       // ユーザーが削除されていたらスキップ
       if (userDoc.exists) {
         String userName = userDoc['name'];
-        bool isReady = doc['is_ready'];
         reservations.add({
           'reservationId': doc.id,
           'timestamp': doc['timestamp'],
-          'isReady': isReady,
           'userName': userName,
         });
       }
@@ -72,7 +70,6 @@ class _TestReservationPageState extends State<TestReservationPage> {
             await _firestore.collection('reservations').add({
               'user_id': user.uid,
               'timestamp': FieldValue.serverTimestamp(),
-              'is_ready': false,
             });
           }
         }
@@ -88,9 +85,6 @@ class _TestReservationPageState extends State<TestReservationPage> {
       child: ListView.builder(
         itemCount: reservations.length,
         itemBuilder: (BuildContext context, int index) {
-          String statusText =
-              reservations[index]['isReady'] ? '使用可能' : '予約中'; // 予約の状態を表すテキスト
-
           // Firestoreから取得したタイムスタンプをDateTimeに変換
           // TODO:_TypeError (type 'Null' is not a subtype of type 'Timestamp' in type cast)
           DateTime reservationTime =
@@ -101,7 +95,7 @@ class _TestReservationPageState extends State<TestReservationPage> {
               DateFormat('yyyy/MM/dd HH:mm').format(reservationTime);
 
           return ListTile(
-            title: Text('${reservations[index]['userName']} - $statusText'),
+            title: Text('${reservations[index]['userName']}'),
             subtitle: Text('予約時間: $formattedTime'), // 予約時間を表示
             trailing: IconButton(
               icon: const Icon(Icons.delete),
@@ -143,12 +137,13 @@ class _TestReservationPageState extends State<TestReservationPage> {
         await _firestore.collection('users').doc(userId).get();
     if (userDoc.exists) {
       int role = userDoc['role'];
+      print(role);
       if (role == 1 || role == 2) {
-        return true; // 管理者の場合は権限あり
+        return true; // 研修終了と管理者の場合は権限あり
       }
     }
     print('権限がありません');
-    return false; // 管理者でない場合は権限なし
+    return false; // 研修前の場合は権限なし
   }
 
   @override
