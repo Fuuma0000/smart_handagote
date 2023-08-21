@@ -22,6 +22,7 @@ class _TestLoginPage extends State<TestLoginPage> {
     super.initState();
   }
 
+  // ユーザー登録の処理
   Future<void> registerUser() async {
     try {
       // 学籍番号が被らないかチェック
@@ -29,15 +30,32 @@ class _TestLoginPage extends State<TestLoginPage> {
           .collection('users')
           .where('student_id', isEqualTo: _studentId)
           .get();
+      // 学籍番号が被っていたら処理を終了
       if (querySnapshot.size > 0) {
         if (!mounted) return;
         DialogHelper.showCustomDialog(context, '学籍番号が被っています', '学籍番号を確認してください');
         return;
       }
+
+      // メールアドレスが被らないかチェック
+      querySnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('email', isEqualTo: _email)
+          .get();
+      // メールアドレスが被っていたら処理を終了
+      if (querySnapshot.size > 0) {
+        if (!mounted) return;
+        DialogHelper.showCustomDialog(
+            context, 'メールアドレスが被っています', 'メールアドレスを確認してください');
+        return;
+      }
+
+      // ユーザー登録
       final User? user = (await FirebaseAuth.instance
               .createUserWithEmailAndPassword(
                   email: _email, password: _password))
           .user;
+      // ユーザー登録に成功したら Firestore にユーザー情報を保存
       if (user != null) {
         await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
           'name': _name,
@@ -55,11 +73,14 @@ class _TestLoginPage extends State<TestLoginPage> {
     }
   }
 
+  // ログインの処理
   Future<void> loginUser() async {
     try {
+      // ログイン
       final User? user = (await FirebaseAuth.instance
               .signInWithEmailAndPassword(email: _email, password: _password))
           .user;
+      // ログインに成功したらダイアログを表示
       if (user != null) {
         if (!mounted) return;
         DialogHelper.showCustomDialog(context, 'ログインしました', '');
