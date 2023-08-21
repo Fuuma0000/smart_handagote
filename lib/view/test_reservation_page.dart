@@ -48,7 +48,8 @@ class _TestReservationPageState extends State<TestReservationPage> {
           await _firestore.collection('users').doc(userId).get();
       // ユーザーが存在していたら予約一覧に追加
       if (userDoc.exists) {
-        String userName = userDoc['name'];
+        print(userDoc['user_name']);
+        String userName = userDoc['user_name'];
         reservations.add({
           'reservationId': doc.id,
           'timestamp': doc['timestamp'],
@@ -82,8 +83,8 @@ class _TestReservationPageState extends State<TestReservationPage> {
           await _firestore.collection('devices').doc(deviceId).get();
       // ユーザーが削除されていたらスキップ
       if (userDoc.exists) {
-        String userName = userDoc['name'];
-        String deviceName = deviceDoc['name'];
+        String userName = userDoc['user_name'];
+        String deviceName = deviceDoc['device_name'];
         logs.add({
           'logId': doc.id,
           'userName': userName,
@@ -179,8 +180,6 @@ class _TestReservationPageState extends State<TestReservationPage> {
     );
   }
 
-  // 使用中一覧を表示するウィジェット
-
   // 予約可能かどうかをチェックする関数
   Future<bool> _isReservationAllowed() async {
     // 現在ログインしているユーザーを取得
@@ -252,37 +251,37 @@ class _TestReservationPageState extends State<TestReservationPage> {
 
             const SizedBox(height: 20),
             const Text('使用中一覧'),
-            StreamBuilder<QuerySnapshot>(
-              stream: _logsStream, // リアルタイムで予約データを取得するストリーム
-              builder: (BuildContext context,
-                  AsyncSnapshot<QuerySnapshot> snapshot) {
-                if (snapshot.hasError) {
-                  return Text(
-                      'エラー: ${snapshot.error}'); // エラーが発生した場合にエラーメッセージを表示
-                }
+            // StreamBuilder<QuerySnapshot>(
+            //   stream: _logsStream, // リアルタイムで予約データを取得するストリーム
+            //   builder: (BuildContext context,
+            //       AsyncSnapshot<QuerySnapshot> snapshot) {
+            //     if (snapshot.hasError) {
+            //       return Text(
+            //           'エラー: ${snapshot.error}'); // エラーが発生した場合にエラーメッセージを表示
+            //     }
 
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const CircularProgressIndicator(); // データがロード中の間、進行中のインジケータを表示
-                }
+            //     if (snapshot.connectionState == ConnectionState.waiting) {
+            //       return const CircularProgressIndicator(); // データがロード中の間、進行中のインジケータを表示
+            //     }
 
-                return FutureBuilder<List<Map<String, dynamic>>>(
-                  future:
-                      _fetchLogsData(snapshot.data!), // スナップショットから予約データを非同期で取得
-                  builder: (BuildContext context,
-                      AsyncSnapshot<List<Map<String, dynamic>>> dataSnapshot) {
-                    if (dataSnapshot.connectionState ==
-                        ConnectionState.waiting) {
-                      return const CircularProgressIndicator(); // データがロード中の間、進行中のインジケータを表示
-                    }
+            //     return FutureBuilder<List<Map<String, dynamic>>>(
+            //       future:
+            //           _fetchLogsData(snapshot.data!), // スナップショットから予約データを非同期で取得
+            //       builder: (BuildContext context,
+            //           AsyncSnapshot<List<Map<String, dynamic>>> dataSnapshot) {
+            //         if (dataSnapshot.connectionState ==
+            //             ConnectionState.waiting) {
+            //           return const CircularProgressIndicator(); // データがロード中の間、進行中のインジケータを表示
+            //         }
 
-                    List<Map<String, dynamic>> logs =
-                        dataSnapshot.data ?? []; // ロードされた予約データ
+            //         List<Map<String, dynamic>> logs =
+            //             dataSnapshot.data ?? []; // ロードされた予約データ
 
-                    return _buildLogList(logs); // 予約データを表示するウィジェットを返す
-                  },
-                );
-              },
-            ),
+            //         return _buildLogList(logs); // 予約データを表示するウィジェットを返す
+            //       },
+            //     );
+            //   },
+            // ),
             const Text('予約一覧'),
             // StreamBuilder で Firestore のデータを監視
             StreamBuilder<QuerySnapshot>(

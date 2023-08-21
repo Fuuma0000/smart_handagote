@@ -63,7 +63,7 @@ class _TestLoginPage extends State<TestLoginPage> {
       // ユーザー登録に成功したら Firestore にユーザー情報を保存
       if (user != null) {
         await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
-          'name': _name,
+          'user_name': _name,
           'student_id': _studentId,
           'role': 0,
           // TODO: 通知用トークンをここに保存
