@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import 'components/dialog.dart';
+
 class TestReservationPage extends StatefulWidget {
   const TestReservationPage({Key? key}) : super(key: key);
 
@@ -13,6 +15,7 @@ class TestReservationPage extends StatefulWidget {
 class _TestReservationPageState extends State<TestReservationPage> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   late Stream<QuerySnapshot> _reservationsStream;
+  bool _isLoadReserving = false; // 予約中かどうかを管理するフラグ
 
   @override
   void initState() {
@@ -24,6 +27,8 @@ class _TestReservationPageState extends State<TestReservationPage> {
   Future<void> _cancelReservation(String reservationId) async {
     // 予約を削除
     await _firestore.collection('reservations').doc(reservationId).delete();
+    if (!mounted) return;
+    DialogHelper.showCustomDialog(context, '予約をキャンセルしました', '');
   }
 
   // 予約一覧を取得 (Firestore から取得したデータを整形)
@@ -56,8 +61,14 @@ class _TestReservationPageState extends State<TestReservationPage> {
     return reservations;
   }
 
+  // Logsの方から現在使用中
+
   // 予約を作成
+  // TODO: 押した時にlogsのend_timeがnullのやつの数がはんだごての個数以下ならlogsに追加
   Future<void> _makeReservation() async {
+    setState(() {
+      _isLoadReserving = true;
+    });
     // 現在ログインしているユーザーを取得
     final User? user = FirebaseAuth.instance.currentUser;
     // ユーザーが存在していたら予約を作成
@@ -71,10 +82,18 @@ class _TestReservationPageState extends State<TestReservationPage> {
               'user_id': user.uid,
               'timestamp': FieldValue.serverTimestamp(),
             });
+            if (!mounted) return;
+            DialogHelper.showCustomDialog(context, '予約しました', '');
           }
         }
       } catch (e) {
+        if (!mounted) return;
+        DialogHelper.showCustomDialog(context, 'エラー', '');
         print('Error making reservation: $e');
+      } finally {
+        setState(() {
+          _isLoadReserving = false;
+        });
       }
     }
   }
@@ -85,10 +104,26 @@ class _TestReservationPageState extends State<TestReservationPage> {
       child: ListView.builder(
         itemCount: reservations.length,
         itemBuilder: (BuildContext context, int index) {
-          // Firestoreから取得したタイムスタンプをDateTimeに変換
-          // TODO:_TypeError (type 'Null' is not a subtype of type 'Timestamp' in type cast)
-          DateTime reservationTime =
-              (reservations[index]['timestamp'] as Timestamp).toDate();
+          // Firestoreから取得したタイムスタンプを変換
+          final dynamic timestamp = reservations[index]['timestamp'];
+
+          // タイムスタンプがnullの場合はエラーメッセージを表示
+          if (timestamp == null || timestamp is! Timestamp) {
+            return ListTile(
+              title: Text('${reservations[index]['userName']}'),
+              subtitle:
+                  const Text('Invalid timestamp'), // Display an error message
+              trailing: IconButton(
+                icon: const Icon(Icons.delete),
+                onPressed: () {
+                  _cancelReservation(reservations[index]
+                      ['reservationId']); // Cancel reservation
+                },
+              ),
+            );
+          }
+          // タイムスタンプをDateTimeに変換
+          DateTime reservationTime = reservations[index]['timestamp'].toDate();
 
           // 予約時間を指定のフォーマットで表示
           String formattedTime =
@@ -111,20 +146,24 @@ class _TestReservationPageState extends State<TestReservationPage> {
   }
 
   // 予約可能かどうかをチェックする関数
+  // TODO: logsの方も確認する
   Future<bool> _isReservationAllowed() async {
+    // 現在ログインしているユーザーを取得
     final User? user = FirebaseAuth.instance.currentUser;
     if (user == null) {
+      if (!mounted) return false;
+      DialogHelper.showCustomDialog(context, 'ログインしていません', '');
       return false; // ユーザーがログインしていない場合は予約不可
     }
 
     // reservationsのコレクションにuser_idが一致するドキュメントがあるか検索
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+    QuerySnapshot reservationsQuerySnapshot = await FirebaseFirestore.instance
         .collection('reservations')
         .where('user_id', isEqualTo: user.uid)
         .get();
-    if (querySnapshot.size > 0) {
-      // TODO: 判定できたからポップアップで表示したいかも
-      print('すでに予約しています');
+    if (reservationsQuerySnapshot.size > 0) {
+      if (!mounted) return false;
+      DialogHelper.showCustomDialog(context, 'すでに予約しています', '');
       return false;
     }
     return true;
@@ -137,12 +176,13 @@ class _TestReservationPageState extends State<TestReservationPage> {
         await _firestore.collection('users').doc(userId).get();
     if (userDoc.exists) {
       int role = userDoc['role'];
-      print(role);
       if (role == 1 || role == 2) {
         return true; // 研修終了と管理者の場合は権限あり
       }
     }
-    print('権限がありません');
+    if (!mounted) return false;
+    DialogHelper.showCustomDialog(context, '権限がありません', '');
+
     return false; // 研修前の場合は権限なし
   }
 
@@ -155,9 +195,13 @@ class _TestReservationPageState extends State<TestReservationPage> {
           children: <Widget>[
             const Text('新しい予約を作成'),
             ElevatedButton(
-              onPressed: _makeReservation,
-              child: const Text('予約する'),
+              onPressed:
+                  _isLoadReserving ? null : _makeReservation, // ボタンを押したときの処理
+              child: _isLoadReserving
+                  ? const CircularProgressIndicator() // クルクル回るインジケータを表示
+                  : const Text('予約する'),
             ),
+
             const SizedBox(height: 20),
             const Text('予約一覧'),
             // StreamBuilder で Firestore のデータを監視
