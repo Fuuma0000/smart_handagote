@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../constant.dart';
+import '../logic/firebase_helper.dart';
 import 'components/dialog.dart';
 
 class UserManagementPage extends StatefulWidget {
@@ -13,7 +14,6 @@ class UserManagementPage extends StatefulWidget {
 }
 
 class _UserManagementPageState extends State<UserManagementPage> {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String _studentId = '';
   int _role = 0; // 初期値を設定
 
@@ -35,8 +35,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
         return;
       }
       // 自分のドキュメントを取得
-      DocumentSnapshot userDoc =
-          await _firestore.collection('users').doc(user.uid).get();
+      DocumentSnapshot userDoc = await FirebaseHelper().getUserDoc(user.uid);
       // 管理者権限がない場合は処理を終了
       if (userDoc['role'] != 2) {
         // ダイアログを表示
@@ -47,10 +46,8 @@ class _UserManagementPageState extends State<UserManagementPage> {
 
       // 入力した学籍番号が存在するかチェック
       // ユーザーを student_id で検索
-      QuerySnapshot querySnapshot = await _firestore
-          .collection('users')
-          .where('student_id', isEqualTo: studentId)
-          .get();
+      QuerySnapshot querySnapshot =
+          await FirebaseHelper().getUserByStudentId(studentId);
       // 学籍番号が見つからない場合は処理を終了
       if (querySnapshot.size == 0) {
         // ダイアログを表示
@@ -63,10 +60,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
       // 該当するユーザーのドキュメントIDを取得
       String userId = querySnapshot.docs[0].id;
       // ユーザーの role を更新
-      await _firestore
-          .collection('users')
-          .doc(userId)
-          .update({'role': newRole});
+      await FirebaseHelper().updateRole(userId, newRole);
       // ダイアログを表示
       if (!mounted) return;
       DialogHelper.showCustomDialog(

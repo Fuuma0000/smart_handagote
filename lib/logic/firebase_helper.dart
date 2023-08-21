@@ -96,4 +96,25 @@ class FirebaseHelper {
     }
     return 0;
   }
+
+  // usersの自分のドキュメントを取得する関数
+  Future<DocumentSnapshot> getUserDoc(String userId) async {
+    DocumentSnapshot userDoc =
+        await _firestore.collection('users').doc(userId).get();
+    return userDoc;
+  }
+
+  // ユーザをstudent_id で検索する関数
+  Future<QuerySnapshot> getUserByStudentId(String studentId) async {
+    QuerySnapshot querySnapshot = await _firestore
+        .collection('users')
+        .where('student_id', isEqualTo: studentId)
+        .get();
+    return querySnapshot;
+  }
+
+  // ユーザーの role を更新する関数
+  Future<void> updateRole(String userId, int newRole) async {
+    await _firestore.collection('users').doc(userId).update({'role': newRole});
+  }
 }
