@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../constant.dart';
 import 'components/dialog.dart';
 
 class TestReservationPage extends StatefulWidget {
@@ -153,10 +154,11 @@ class _TestReservationPageState extends State<TestReservationPage> {
           if (timestamp == null || timestamp is! Timestamp) {
             return ListTile(
               title: Text('${reservations[index]['userName']}'),
-              subtitle:
-                  const Text('Invalid timestamp'), // Display an error message
+              subtitle: const Text('Invalid timestamp',
+                  style: TextStyle(
+                      color: Colors.white)), // Display an error message
               trailing: IconButton(
-                icon: const Icon(Icons.delete),
+                icon: const Icon(Icons.delete, color: Colors.white),
                 onPressed: () {
                   _cancelReservation(reservations[index]
                       ['reservationId']); // Cancel reservation
@@ -172,10 +174,12 @@ class _TestReservationPageState extends State<TestReservationPage> {
               DateFormat('yyyy/MM/dd HH:mm').format(reservationTime);
 
           return ListTile(
-            title: Text('${reservations[index]['userName']}'),
-            subtitle: Text('予約時間: $formattedTime'), // 予約時間を表示
+            title: Text('${reservations[index]['userName']}',
+                style: const TextStyle(color: Colors.white)),
+            subtitle: Text('予約時間: $formattedTime',
+                style: const TextStyle(color: Colors.white)), // 予約時間を表示
             trailing: IconButton(
-              icon: const Icon(Icons.delete),
+              icon: const Icon(Icons.delete, color: Colors.white),
               onPressed: () {
                 _cancelReservation(
                     reservations[index]['reservationId']); // 予約をキャンセル
@@ -200,9 +204,11 @@ class _TestReservationPageState extends State<TestReservationPage> {
           if (timestamp == null || timestamp is! Timestamp) {
             return ListTile(
               title: Text('${logs[index]['userName']}'),
-              subtitle: const Text('開始前'), // Display an error message
+              subtitle: const Text('開始前',
+                  style: TextStyle(
+                      color: Colors.white)), // Display an error message
               trailing: IconButton(
-                icon: const Icon(Icons.delete),
+                icon: const Icon(Icons.delete, color: Colors.white),
                 onPressed: () {
                   _cancelLog(
                       logs[index]['reservationId']); // Cancel reservation
@@ -220,17 +226,22 @@ class _TestReservationPageState extends State<TestReservationPage> {
           String statusMessage = logs[index]['isTunrOff'] ? '切り忘れ' : '使用中';
 
           return ListTile(
-            title: Text('${logs[index]['userName']}'),
+            title: Text('${logs[index]['userName']}',
+                style: const TextStyle(color: Colors.white)),
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('開始時間: $formattedTime'), // Start time
-                Text('デバイス名: ${logs[index]['deviceName']}'), // Device name
-                Text('ステータス: $statusMessage'), // Status message
+                Text('開始時間: $formattedTime',
+                    style: const TextStyle(color: Colors.white)), // Start time
+                Text('デバイス名: ${logs[index]['deviceName']}',
+                    style: const TextStyle(color: Colors.white)), // Device name
+                Text('ステータス: $statusMessage',
+                    style:
+                        const TextStyle(color: Colors.white)), // Status message
               ],
             ),
             trailing: IconButton(
-              icon: const Icon(Icons.delete),
+              icon: const Icon(Icons.delete, color: Colors.white),
               onPressed: () {
                 _cancelLog(logs[index]['logId']); // Cancel reservation
               },
@@ -297,28 +308,32 @@ class _TestReservationPageState extends State<TestReservationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Reservation')),
+      backgroundColor: Constant.black,
       body: Center(
         child: Column(
           children: <Widget>[
-            const Text('新しい予約を作成'),
+            const SizedBox(
+              height: 20,
+            ),
+            const Text('新しい予約を作成', style: TextStyle(color: Colors.white)),
             ElevatedButton(
               onPressed:
                   _isLoadReserving ? null : _makeReservation, // ボタンを押したときの処理
               child: _isLoadReserving
                   ? const CircularProgressIndicator() // クルクル回るインジケータを表示
-                  : const Text('予約する'),
+                  : const Text('予約する', style: TextStyle(color: Colors.black)),
             ),
 
             const SizedBox(height: 20),
-            const Text('使用中一覧'),
+            const Text('使用中一覧', style: TextStyle(color: Colors.white)),
             StreamBuilder<QuerySnapshot>(
               stream: _logsStream, // リアルタイムで予約データを取得するストリーム
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (snapshot.hasError) {
-                  return Text(
-                      'エラー: ${snapshot.error}'); // エラーが発生した場合にエラーメッセージを表示
+                  return Text('エラー: ${snapshot.error}',
+                      style: const TextStyle(
+                          color: Colors.white)); // エラーが発生した場合にエラーメッセージを表示
                 }
 
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -343,15 +358,16 @@ class _TestReservationPageState extends State<TestReservationPage> {
                 );
               },
             ),
-            const Text('予約一覧'),
+            const Text('予約一覧', style: TextStyle(color: Colors.white)),
             // StreamBuilder で Firestore のデータを監視
             StreamBuilder<QuerySnapshot>(
               stream: _reservationsStream, // リアルタイムで予約データを取得するストリーム
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (snapshot.hasError) {
-                  return Text(
-                      'エラー: ${snapshot.error}'); // エラーが発生した場合にエラーメッセージを表示
+                  return Text('エラー: ${snapshot.error}',
+                      style: const TextStyle(
+                          color: Colors.white)); // エラーが発生した場合にエラーメッセージを表示
                 }
 
                 if (snapshot.connectionState == ConnectionState.waiting) {
