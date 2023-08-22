@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_handagote/view/test_reservation_page.dart';
 
 import '../logic/firebase_helper.dart';
@@ -67,8 +68,16 @@ class _SignUpPageState extends State<SignUpPage> {
       if (user != null) {
         await FirebaseHelper().saveUserInfo(user.uid, _name, _studentId);
         if (!mounted) return;
-        func() {
+        func() async {
           // TODO: ログイン処理
+          final User? user = (await FirebaseAuth.instance
+                  .signInWithEmailAndPassword(
+                      email: _email, password: _password))
+              .user;
+          // user_idを保存
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          prefs.setString('user_id', user!.uid);
+
           print('success');
           Navigator.push(
               context,
