@@ -19,7 +19,7 @@ export const startUsing = functions.https.onRequest(async (req, res) => {
     }
 
     const userData = userDoc.data();
-    if (userData!.role !== 0) {
+    if (userData!.role == 0) {
       res.status(403).send('User not authorized');
       return;
     }
