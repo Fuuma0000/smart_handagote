@@ -79,10 +79,8 @@ class _SignUpPageState extends State<SignUpPage> {
           prefs.setString('user_id', user!.uid);
 
           print('success');
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => const TestReservationPage()));
+          await Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => TestReservationPage()));
         }
 
         DialogHelper.showCustomDialog(
@@ -149,14 +147,14 @@ class _SignUpPageState extends State<SignUpPage> {
                     Container(
                       width: MediaQuery.of(context).size.width * 0.8,
                       child: ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
                           _name = _nameController.text;
                           _studentId = _studentIdController.text;
                           _email = _emailController.text;
                           _password = _passwordController.text;
 
                           if (!_isLoadSigningIn) {
-                            registerUser();
+                            await registerUser();
                           }
                         },
                         style: ElevatedButton.styleFrom(

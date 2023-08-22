@@ -7,7 +7,7 @@ class DialogHelper {
       {required BuildContext context,
       required String title,
       required String message,
-      Function? onPressed}) async {
+      GestureTapCallback? onPressed}) async {
     // onPressedがnullの場合はnavigator.pop
     onPressed ??= () {
       Navigator.pop(context);
@@ -29,7 +29,7 @@ class DialogHelper {
           actions: <Widget>[
             TextButton(
               child: const Text('OK', style: TextStyle(color: Colors.green)),
-              onPressed: onPressed!(),
+              onPressed: onPressed!,
             ),
           ],
         );
