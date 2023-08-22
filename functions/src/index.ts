@@ -1,5 +1,5 @@
 import * as admin from 'firebase-admin';
-import { deleteTest, insertTestData, userTest } from './functions/test';
+// import { deleteTest, insertTestData, userTest } from './functions/test';
 import { checkNextReservation } from './functions/checkNextReservation';
 import { endUsing } from './functions/endUsing';
 import { startUsing } from './functions/startUsing';
@@ -16,6 +16,6 @@ exports.cancelReservation = cancelReservation;
 exports.alert = alert;
 
 // テスト用
-exports.userTest = userTest;
-exports.insertTestData = insertTestData;
-exports.deleteTest = deleteTest;
+// exports.userTest = userTest;
+// exports.insertTestData = insertTestData;
+// exports.deleteTest = deleteTest;
