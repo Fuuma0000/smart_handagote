@@ -73,11 +73,13 @@ class FirebaseHelper {
     return false;
   }
 
-  // logsのコレクションにuser_idが一致するドキュメントがあるか検索する関数
+  // 使用前or使用中を判定する関数
   Future<bool> isLogExists(String userId) async {
+    // logのコレクションにuser_idが一致して、end_timeがnullのドキュメントがあるか検索
     QuerySnapshot logsQuerySnapshot = await FirebaseFirestore.instance
         .collection('logs')
         .where('user_id', isEqualTo: userId)
+        .where('end_time', isNull: true)
         .get();
     if (logsQuerySnapshot.size > 0) {
       // 予約がある場合は予約不可
