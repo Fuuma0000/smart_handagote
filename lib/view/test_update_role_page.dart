@@ -31,7 +31,8 @@ class _UserManagementPageState extends State<UserManagementPage> {
       final User? user = FirebaseAuth.instance.currentUser;
       if (user == null) {
         // ダイアログを表示
-        DialogHelper.showCustomDialog(context, 'ログインしていません', 'メッセージ');
+        DialogHelper.showCustomDialog(
+            context: context, title: 'ログインしていません', message: 'メッセージ');
         return;
       }
       // 自分のドキュメントを取得
@@ -40,7 +41,8 @@ class _UserManagementPageState extends State<UserManagementPage> {
       if (userDoc['role'] != 2) {
         // ダイアログを表示
         if (!mounted) return;
-        DialogHelper.showCustomDialog(context, '管理者権限がありません', '管理者に連絡してください');
+        DialogHelper.showCustomDialog(
+            context: context, title: '管理者権限がありません', message: '管理者に連絡してください');
         return;
       }
 
@@ -52,7 +54,8 @@ class _UserManagementPageState extends State<UserManagementPage> {
       if (querySnapshot.size == 0) {
         // ダイアログを表示
         if (!mounted) return;
-        DialogHelper.showCustomDialog(context, '学籍番号が見つかりません', '学籍番号を確認してください');
+        DialogHelper.showCustomDialog(
+            context: context, title: '学籍番号が見つかりません', message: '学籍番号を確認してください');
         return;
       }
 
@@ -64,11 +67,14 @@ class _UserManagementPageState extends State<UserManagementPage> {
       // ダイアログを表示
       if (!mounted) return;
       DialogHelper.showCustomDialog(
-          context, '権限を更新しました', _roleOptions[newRole]['label'] + ' に更新しました');
+          context: context,
+          title: '権限を更新しました',
+          message: _roleOptions[newRole]['label'] + ' に更新しました');
     } catch (e) {
       // ダイアログを表示
       if (!mounted) return;
-      DialogHelper.showCustomDialog(context, 'エラー', '権限の更新に失敗しました');
+      DialogHelper.showCustomDialog(
+          context: context, title: 'エラー', message: '権限の更新に失敗しました');
       print('Error updating user role: $e');
     }
   }

@@ -48,7 +48,6 @@ export const insertTestData = functions.https.onRequest(async (req, res) => {
     {
       user_id: '1112',
       reservation_time: Timestamp.fromDate(new Date('2023-09-01 10:00:00.000000')),
-      is_ready: false,
     },
   ];
 
@@ -99,10 +98,7 @@ export const userTest = functions.https.onRequest(async (req, res) => {
 });
 
 exports = module.exports = {
-  // startUsing,
-  // endUsing,
-  // alert,
-  // insertTestData,
-  // deleteTest,
+  insertTestData,
+  deleteTest,
   userTest,
 };

@@ -4,7 +4,15 @@ import '../../constant.dart';
 
 class DialogHelper {
   static Future<void> showCustomDialog(
-      BuildContext context, String title, String message) async {
+      {required BuildContext context,
+      required String title,
+      required String message,
+      Function? onPressed}) async {
+    // onPressedがnullの場合はnavigator.pop
+    onPressed ??= () {
+      Navigator.pop(context);
+    };
+
     await showDialog(
       context: context,
       builder: (_) {
@@ -21,9 +29,7 @@ class DialogHelper {
           actions: <Widget>[
             TextButton(
               child: const Text('OK', style: TextStyle(color: Colors.green)),
-              onPressed: () {
-                Navigator.pop(context);
-              },
+              onPressed: onPressed!(),
             ),
           ],
         );
