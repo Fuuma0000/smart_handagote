@@ -99,10 +99,7 @@ export const userTest = functions.https.onRequest(async (req, res) => {
 });
 
 exports = module.exports = {
-  // startUsing,
-  // endUsing,
-  // alert,
-  // insertTestData,
-  // deleteTest,
+  insertTestData,
+  deleteTest,
   userTest,
 };
