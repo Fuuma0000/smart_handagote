@@ -14,7 +14,6 @@ export const checkNextReservation = async (device_id: string) => {
     };
   }
   // 一番古い予約を削除
-  await reservationDoc.docs[0].ref.delete();
   const nextReservationData = reservationDoc.docs[0].data();
   // const device_id = (await logRef.get()).data()!.device_id;
 

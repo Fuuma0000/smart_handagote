@@ -4,6 +4,7 @@ import { checkNextReservation } from './functions/checkNextReservation';
 import { endUsing } from './functions/endUsing';
 import { startUsing } from './functions/startUsing';
 import { cancelReservation } from './functions/cancelReservation';
+import { alert } from './functions/alert';
 
 admin.initializeApp();
 
@@ -12,6 +13,7 @@ exports.startUsing = startUsing;
 exports.endUsing = endUsing;
 exports.checkNextReservation = checkNextReservation;
 exports.cancelReservation = cancelReservation;
+exports.alert = alert;
 
 // テスト用
 exports.userTest = userTest;

@@ -1,6 +1,6 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-const sendNotification = require('./notification');
+const { sendNotification } = require('./notification');
 
 // 切り忘れ検知時の処理
 export const alert = functions.https.onRequest(async (req, res) => {
@@ -32,3 +32,7 @@ export const alert = functions.https.onRequest(async (req, res) => {
 
   return;
 });
+
+exports = module.exports = {
+  alert,
+};
