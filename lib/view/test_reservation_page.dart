@@ -112,7 +112,8 @@ class _TestReservationPageState extends State<TestReservationPage> {
       message = '予約に失敗しました';
       print('Error making reservation: $e');
     } finally {
-      DialogHelper.showCustomDialog(context, title, message);
+      DialogHelper.showCustomDialog(
+          context: context, title: title, message: message);
       setState(() {
         _isLoadReserving = false;
       });
@@ -124,7 +125,8 @@ class _TestReservationPageState extends State<TestReservationPage> {
     // 予約を削除
     await FirebaseHelper().cancelLog(logId);
     if (!mounted) return;
-    DialogHelper.showCustomDialog(context, '予約をキャンセルしました', '');
+    DialogHelper.showCustomDialog(
+        context: context, title: '予約をキャンセルしました', message: '');
   }
 
   // Logsの方から開始前と使用中のユーザーを取得
@@ -218,7 +220,8 @@ class _TestReservationPageState extends State<TestReservationPage> {
     // 予約を削除
     await FirebaseHelper().cancelReservation(reservationId);
     if (!mounted) return;
-    DialogHelper.showCustomDialog(context, '予約をキャンセルしました', '');
+    DialogHelper.showCustomDialog(
+        context: context, title: '予約をキャンセルしました', message: '');
   }
 
   // 予約一覧を取得 (Firestore から取得したデータを整形)
