@@ -36,7 +36,8 @@ class _TestLoginPage extends State<TestLoginPage> {
       // 学籍番号が被っていたら処理を終了
       if (!isStudentIdUnique) {
         if (!mounted) return;
-        DialogHelper.showCustomDialog(context, '学籍番号が被っています', '学籍番号を確認してください');
+        DialogHelper.showCustomDialog(
+            context: context, title: '学籍番号が被っています', message: '学籍番号を確認してください');
         return;
       }
 
@@ -46,7 +47,9 @@ class _TestLoginPage extends State<TestLoginPage> {
       if (!isEmailUnique) {
         if (!mounted) return;
         DialogHelper.showCustomDialog(
-            context, 'メールアドレスが被っています', 'メールアドレスを確認してください');
+            context: context,
+            title: 'メールアドレスが被っています',
+            message: 'メールアドレスを確認してください');
         return;
       }
 
@@ -59,11 +62,13 @@ class _TestLoginPage extends State<TestLoginPage> {
       if (user != null) {
         await FirebaseHelper().saveUserInfo(user.uid, _name, _studentId);
         if (!mounted) return;
-        DialogHelper.showCustomDialog(context, 'ユーザー登録しました', '');
+        DialogHelper.showCustomDialog(
+            context: context, title: 'ユーザー登録しました', message: '');
       }
     } catch (e) {
       if (!mounted) return;
-      DialogHelper.showCustomDialog(context, 'エラー', '');
+      DialogHelper.showCustomDialog(
+          context: context, title: 'エラー', message: '');
       print(e);
     } finally {
       setState(() {
@@ -85,11 +90,13 @@ class _TestLoginPage extends State<TestLoginPage> {
       // ログインに成功したらダイアログを表示
       if (user != null) {
         if (!mounted) return;
-        DialogHelper.showCustomDialog(context, 'ログインしました', '');
+        DialogHelper.showCustomDialog(
+            context: context, title: 'ログインしました', message: '');
       }
     } catch (e) {
       if (!mounted) return;
-      DialogHelper.showCustomDialog(context, 'エラー', '');
+      DialogHelper.showCustomDialog(
+          context: context, title: 'エラー', message: '');
       print(e);
     } finally {
       setState(() {

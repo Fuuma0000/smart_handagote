@@ -32,7 +32,8 @@ class _TestReservationPageState extends State<TestReservationPage> {
     // 予約を削除
     await FirebaseHelper().cancelReservation(reservationId);
     if (!mounted) return;
-    DialogHelper.showCustomDialog(context, '予約をキャンセルしました', '');
+    DialogHelper.showCustomDialog(
+        context: context, title: '予約をキャンセルしました', message: '');
   }
 
   // logsのキャンセル処理
@@ -40,7 +41,8 @@ class _TestReservationPageState extends State<TestReservationPage> {
     // 予約を削除
     await FirebaseHelper().cancelLog(logId);
     if (!mounted) return;
-    DialogHelper.showCustomDialog(context, '予約をキャンセルしました', '');
+    DialogHelper.showCustomDialog(
+        context: context, title: '予約をキャンセルしました', message: '');
   }
 
   // 予約一覧を取得 (Firestore から取得したデータを整形)
@@ -121,17 +123,20 @@ class _TestReservationPageState extends State<TestReservationPage> {
 
             if (numberOfLogs < numberOfDevices) {
               if (!mounted) return;
-              DialogHelper.showCustomDialog(context, '予約せずに使用可能です', '');
+              DialogHelper.showCustomDialog(
+                  context: context, title: '予約せずに使用可能です', message: '');
             } else {
               await FirebaseHelper().addReservationEntry(user.uid);
               if (!mounted) return;
-              DialogHelper.showCustomDialog(context, '予約しました', '');
+              DialogHelper.showCustomDialog(
+                  context: context, title: '予約しました', message: '');
             }
           }
         }
       } catch (e) {
         if (!mounted) return;
-        DialogHelper.showCustomDialog(context, 'エラー', '');
+        DialogHelper.showCustomDialog(
+            context: context, title: 'エラー', message: '');
         print('Error making reservation: $e');
       } finally {
         setState(() {
@@ -250,7 +255,8 @@ class _TestReservationPageState extends State<TestReservationPage> {
     final User? user = FirebaseAuth.instance.currentUser;
     if (user == null) {
       if (!mounted) return false;
-      DialogHelper.showCustomDialog(context, 'ログインしていません', '');
+      DialogHelper.showCustomDialog(
+          context: context, title: 'ログインしていません', message: '');
       return false; // ユーザーがログインしていない場合は予約不可
     }
 
@@ -258,7 +264,8 @@ class _TestReservationPageState extends State<TestReservationPage> {
     bool isLogExists = await FirebaseHelper().isLogExists(user.uid);
     if (isLogExists) {
       if (!mounted) return false;
-      DialogHelper.showCustomDialog(context, '開始前です', '');
+      DialogHelper.showCustomDialog(
+          context: context, title: '開始前です', message: '');
       return false;
     }
 
@@ -267,7 +274,8 @@ class _TestReservationPageState extends State<TestReservationPage> {
         await FirebaseHelper().isReservationExists(user.uid);
     if (isReservationExists) {
       if (!mounted) return false;
-      DialogHelper.showCustomDialog(context, 'すでに予約しています', '');
+      DialogHelper.showCustomDialog(
+          context: context, title: 'すでに予約しています', message: '');
       return false;
     }
     return true;
@@ -281,7 +289,8 @@ class _TestReservationPageState extends State<TestReservationPage> {
       return true; // 研修終了と管理者の場合は権限あり
     }
     if (!mounted) return false;
-    DialogHelper.showCustomDialog(context, '権限がありません', '');
+    DialogHelper.showCustomDialog(
+        context: context, title: '権限がありません', message: '');
     return false; // 研修前の場合は権限なし
   }
 
