@@ -3,6 +3,7 @@ import { deleteTest, insertTestData, userTest } from './functions/test';
 import { checkNextReservation } from './functions/checkNextReservation';
 import { endUsing } from './functions/endUsing';
 import { startUsing } from './functions/startUsing';
+import { cancelReservation } from './functions/cancelReservation';
 
 admin.initializeApp();
 
@@ -10,6 +11,7 @@ admin.initializeApp();
 exports.startUsing = startUsing;
 exports.endUsing = endUsing;
 exports.checkNextReservation = checkNextReservation;
+exports.cancelReservation = cancelReservation;
 
 // テスト用
 exports.userTest = userTest;
