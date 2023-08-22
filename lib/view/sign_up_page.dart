@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:smart_handagote/view/sign_in_page.dart';
 import 'package:smart_handagote/view/test_reservation_page.dart';
 
 import '../logic/firebase_helper.dart';
@@ -69,7 +70,6 @@ class _SignUpPageState extends State<SignUpPage> {
         await FirebaseHelper().saveUserInfo(user.uid, _name, _studentId);
         if (!mounted) return;
         func() async {
-          // TODO: ログイン処理
           final User? user = (await FirebaseAuth.instance
                   .signInWithEmailAndPassword(
                       email: _email, password: _password))
@@ -79,8 +79,8 @@ class _SignUpPageState extends State<SignUpPage> {
           prefs.setString('user_id', user!.uid);
 
           print('success');
-          await Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => TestReservationPage()));
+          await Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => const TestReservationPage()));
         }
 
         DialogHelper.showCustomDialog(
@@ -170,6 +170,22 @@ class _SignUpPageState extends State<SignUpPage> {
                                 style: TextStyle(color: Colors.white)),
                       ),
                     ),
+                    // ログインはこちら
+                    TextButton.icon(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const SignInPage()));
+                        },
+                        icon: const Icon(
+                          FontAwesomeIcons.angleLeft,
+                          color: Constant.lightGray,
+                          size: 14,
+                        ),
+                        label: const Text('アカウントをお持ちのかたはこちら',
+                            style: TextStyle(
+                                color: Constant.lightGray, fontSize: 14))),
                   ],
                 ),
               ),

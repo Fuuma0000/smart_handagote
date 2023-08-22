@@ -54,7 +54,7 @@ class _SignInPageState extends State<SignInPage> {
                     _inputWidget(_passwordController, 'パスワード：', true),
                     const SizedBox(height: 60),
                     // 登録ボタン
-                    Container(
+                    SizedBox(
                       width: MediaQuery.of(context).size.width * 0.8,
                       child: ElevatedButton(
                         onPressed: () {},
