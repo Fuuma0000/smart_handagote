@@ -27,46 +27,104 @@ class _TestReservationPageState extends State<TestReservationPage> {
     _logsStream = _firestore.collection('logs').snapshots();
   }
 
-  // Reservationのキャンセル処理
-  Future<void> _cancelReservation(String reservationId) async {
-    // 予約を削除
-    await FirebaseHelper().cancelReservation(reservationId);
-    if (!mounted) return;
-    DialogHelper.showCustomDialog(context, '予約をキャンセルしました', '');
+  // 使用前か確認する関数
+  Future<bool> _isLogExists(String userId) async {
+    // logのコレクションにuser_idが一致して、end_timeがnullのドキュメントがあるか検索
+    bool isLogExists = await FirebaseHelper().isLogExists(userId);
+    return isLogExists; //
   }
 
-  // logsのキャンセル処理
+  // 使用中のログにあるか検索する関数
+  Future<bool> _isReservationExists(String userId) async {
+    // 使用中のログにあるか検索
+    bool isReservationExists =
+        await FirebaseHelper().isReservationExists(userId);
+    return isReservationExists; // 予約が存在する場合はfalse 予約が存在しない場合はtrue
+  }
+
+  // 権限があるかどうかをチェックする関数
+  Future<bool> _isAuthorized(userId) async {
+    // ユーザーの権限を取得
+    int role = await FirebaseHelper().getUserRole(userId);
+    if (role == 1 || role == 2) {
+      return true; // 研修終了と管理者の場合は権限あり
+    }
+    return false; // 研修前の場合は権限なし
+  }
+
+  // はんだごてが空いているかどうかをチェックする関数
+  Future<bool> _isDeviceAvailable() async {
+    // はんだごての数を取得
+    int numberOfDevices = await FirebaseHelper().getNumberOfDevices();
+    // 使用中のログの数を取得
+    int numberOfLogs = await FirebaseHelper().getNumberOfLogs();
+    if (numberOfLogs < numberOfDevices) {
+      return true; // はんだごてが空いている場合はtrue
+    }
+    return false; // はんだごてが空いていない場合はfalse
+  }
+
+  // 予約を作成
+  Future<void> _makeReservation() async {
+    setState(() {
+      _isLoadReserving = true;
+    });
+    String title = '予約不可';
+    String message = '';
+    try {
+      // 現在ログインしているユーザーを取得
+      final User? user = FirebaseAuth.instance.currentUser;
+      // ユーザーが存在しなかったら処理を終了
+      if (user == null) {
+        message = 'ログインしていません';
+        return;
+      }
+      bool isAuthorized = await _isAuthorized(user.uid);
+      // 権限があるか確認
+      if (!isAuthorized) {
+        message = '権限がありません';
+        return;
+      }
+      // logに存在する場合は予約不可
+      bool isLogExists = await _isLogExists(user.uid);
+      if (isLogExists) {
+        message = '使用中一覧に存在してます';
+        return;
+      }
+      // すでに予約している場合は予約不可
+      bool isReservationAllowed = await _isReservationExists(user.uid);
+      if (isReservationAllowed) {
+        message = 'すでに予約しています';
+        return;
+      }
+      // はんだごてが空いているか確認
+      bool isDeviceAvailable = await _isDeviceAvailable();
+      if (isDeviceAvailable) {
+        message = 'はんだごてが空いています';
+        return;
+      }
+      // データを追加
+      await FirebaseHelper().addReservationEntry(user.uid);
+      title = '予約完了';
+      message = '予約しました';
+    } catch (e) {
+      title = 'エラー';
+      message = '予約に失敗しました';
+      print('Error making reservation: $e');
+    } finally {
+      DialogHelper.showCustomDialog(context, title, message);
+      setState(() {
+        _isLoadReserving = false;
+      });
+    }
+  }
+
+// logsのキャンセル処理
   Future<void> _cancelLog(String logId) async {
     // 予約を削除
     await FirebaseHelper().cancelLog(logId);
     if (!mounted) return;
     DialogHelper.showCustomDialog(context, '予約をキャンセルしました', '');
-  }
-
-  // 予約一覧を取得 (Firestore から取得したデータを整形)
-  Future<List<Map<String, dynamic>>> _fetchReservationsData(
-      QuerySnapshot snapshot) async {
-    // 予約一覧を格納する配列
-    List<Map<String, dynamic>> reservations = [];
-
-    // 予約一覧を整形
-    for (QueryDocumentSnapshot doc in snapshot.docs) {
-      // ユーザー名を取得
-      String userName = await FirebaseHelper().getUserName(doc['user_id']);
-      // ユーザーが存在していたら予約一覧に追加
-      if (userName != '') {
-        reservations.add({
-          'reservationId': doc.id,
-          'timestamp': doc['timestamp'],
-          'userName': userName,
-        });
-      }
-    }
-
-    // 予約一覧をタイムスタンプで昇順にソート
-    // TODO:_TypeError (type 'Null' is not a subtype of type 'Timestamp' of 'other')になる発生条件が不明
-    reservations.sort((a, b) => a['timestamp'].compareTo(b['timestamp']));
-    return reservations;
   }
 
   // Logsの方から開始前と使用中のユーザーを取得
@@ -100,95 +158,6 @@ class _TestReservationPageState extends State<TestReservationPage> {
       }
     }
     return logs;
-  }
-
-  // 予約を作成
-  Future<void> _makeReservation() async {
-    setState(() {
-      _isLoadReserving = true;
-    });
-    // 現在ログインしているユーザーを取得
-    final User? user = FirebaseAuth.instance.currentUser;
-    // ユーザーが存在していたら予約を作成
-    if (user != null) {
-      try {
-        // 権限があるか確認
-        if (await _isAuthorized(user.uid)) {
-          // すでに予約している場合は予約不可
-          if (await _isReservationAllowed()) {
-            int numberOfLogs = await FirebaseHelper().getNumberOfLogs();
-            int numberOfDevices = await FirebaseHelper().getNumberOfDevices();
-
-            if (numberOfLogs < numberOfDevices) {
-              if (!mounted) return;
-              DialogHelper.showCustomDialog(context, '予約せずに使用可能です', '');
-            } else {
-              await FirebaseHelper().addReservationEntry(user.uid);
-              if (!mounted) return;
-              DialogHelper.showCustomDialog(context, '予約しました', '');
-            }
-          }
-        }
-      } catch (e) {
-        if (!mounted) return;
-        DialogHelper.showCustomDialog(context, 'エラー', '');
-        print('Error making reservation: $e');
-      } finally {
-        setState(() {
-          _isLoadReserving = false;
-        });
-      }
-    }
-  }
-
-  // 予約一覧を表示するウィジェット
-  Widget _buildReservationList(List<Map<String, dynamic>> reservations) {
-    return Expanded(
-      child: ListView.builder(
-        itemCount: reservations.length,
-        itemBuilder: (BuildContext context, int index) {
-          // Firestoreから取得したタイムスタンプを変換
-          final dynamic timestamp = reservations[index]['timestamp'];
-
-          // タイムスタンプがnullの場合はエラーメッセージを表示
-          if (timestamp == null || timestamp is! Timestamp) {
-            return ListTile(
-              title: Text('${reservations[index]['userName']}'),
-              subtitle: const Text('Invalid timestamp',
-                  style: TextStyle(
-                      color: Colors.white)), // Display an error message
-              trailing: IconButton(
-                icon: const Icon(Icons.delete, color: Colors.white),
-                onPressed: () {
-                  _cancelReservation(reservations[index]
-                      ['reservationId']); // Cancel reservation
-                },
-              ),
-            );
-          }
-          // タイムスタンプをDateTimeに変換
-          DateTime reservationTime = reservations[index]['timestamp'].toDate();
-
-          // 予約時間を指定のフォーマットで表示
-          String formattedTime =
-              DateFormat('yyyy/MM/dd HH:mm').format(reservationTime);
-
-          return ListTile(
-            title: Text('${reservations[index]['userName']}',
-                style: const TextStyle(color: Colors.white)),
-            subtitle: Text('予約時間: $formattedTime',
-                style: const TextStyle(color: Colors.white)), // 予約時間を表示
-            trailing: IconButton(
-              icon: const Icon(Icons.delete, color: Colors.white),
-              onPressed: () {
-                _cancelReservation(
-                    reservations[index]['reservationId']); // 予約をキャンセル
-              },
-            ),
-          );
-        },
-      ),
-    );
   }
 
   // 使用中一覧を表示するウィジェット
@@ -244,45 +213,88 @@ class _TestReservationPageState extends State<TestReservationPage> {
     );
   }
 
-  // 予約可能かどうかをチェックする関数
-  Future<bool> _isReservationAllowed() async {
-    // 現在ログインしているユーザーを取得
-    final User? user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
-      if (!mounted) return false;
-      DialogHelper.showCustomDialog(context, 'ログインしていません', '');
-      return false; // ユーザーがログインしていない場合は予約不可
-    }
-
-    // logのコレクションにuser_idが一致して、start_timeとent_timeがnullのドキュメントがあるか検索
-    bool isLogExists = await FirebaseHelper().isLogExists(user.uid);
-    if (isLogExists) {
-      if (!mounted) return false;
-      DialogHelper.showCustomDialog(context, '開始前です', '');
-      return false;
-    }
-
-    // reservationsのコレクションにuser_idが一致するドキュメントがあるか検索
-    bool isReservationExists =
-        await FirebaseHelper().isReservationExists(user.uid);
-    if (isReservationExists) {
-      if (!mounted) return false;
-      DialogHelper.showCustomDialog(context, 'すでに予約しています', '');
-      return false;
-    }
-    return true;
+  // Reservationのキャンセル処理
+  Future<void> _cancelReservation(String reservationId) async {
+    // 予約を削除
+    await FirebaseHelper().cancelReservation(reservationId);
+    if (!mounted) return;
+    DialogHelper.showCustomDialog(context, '予約をキャンセルしました', '');
   }
 
-  // 権限があるかどうかをチェックする関数
-  Future<bool> _isAuthorized(userId) async {
-    // ユーザーの権限を取得
-    int role = await FirebaseHelper().getUserRole(userId);
-    if (role == 1 || role == 2) {
-      return true; // 研修終了と管理者の場合は権限あり
+  // 予約一覧を取得 (Firestore から取得したデータを整形)
+  Future<List<Map<String, dynamic>>> _fetchReservationsData(
+      QuerySnapshot snapshot) async {
+    // 予約一覧を格納する配列
+    List<Map<String, dynamic>> reservations = [];
+
+    // 予約一覧を整形
+    for (QueryDocumentSnapshot doc in snapshot.docs) {
+      // ユーザー名を取得
+      String userName = await FirebaseHelper().getUserName(doc['user_id']);
+      // ユーザーが存在していたら予約一覧に追加
+      if (userName != '') {
+        reservations.add({
+          'reservationId': doc.id,
+          'timestamp': doc['timestamp'],
+          'userName': userName,
+        });
+      }
     }
-    if (!mounted) return false;
-    DialogHelper.showCustomDialog(context, '権限がありません', '');
-    return false; // 研修前の場合は権限なし
+
+    // 予約一覧をタイムスタンプで昇順にソート
+    // TODO:_TypeError (type 'Null' is not a subtype of type 'Timestamp' of 'other')になる発生条件が不明
+    reservations.sort((a, b) => a['timestamp'].compareTo(b['timestamp']));
+    return reservations;
+  }
+
+  // 予約一覧を表示するウィジェット
+  Widget _buildReservationList(List<Map<String, dynamic>> reservations) {
+    return Expanded(
+      child: ListView.builder(
+        itemCount: reservations.length,
+        itemBuilder: (BuildContext context, int index) {
+          // Firestoreから取得したタイムスタンプを変換
+          final dynamic timestamp = reservations[index]['timestamp'];
+
+          // タイムスタンプがnullの場合はエラーメッセージを表示
+          if (timestamp == null || timestamp is! Timestamp) {
+            return ListTile(
+              title: Text('${reservations[index]['userName']}'),
+              subtitle: const Text('Invalid timestamp',
+                  style: TextStyle(
+                      color: Colors.white)), // Display an error message
+              trailing: IconButton(
+                icon: const Icon(Icons.delete, color: Colors.white),
+                onPressed: () {
+                  _cancelReservation(reservations[index]
+                      ['reservationId']); // Cancel reservation
+                },
+              ),
+            );
+          }
+          // タイムスタンプをDateTimeに変換
+          DateTime reservationTime = reservations[index]['timestamp'].toDate();
+
+          // 予約時間を指定のフォーマットで表示
+          String formattedTime =
+              DateFormat('yyyy/MM/dd HH:mm').format(reservationTime);
+
+          return ListTile(
+            title: Text('${reservations[index]['userName']}',
+                style: const TextStyle(color: Colors.white)),
+            subtitle: Text('予約時間: $formattedTime',
+                style: const TextStyle(color: Colors.white)), // 予約時間を表示
+            trailing: IconButton(
+              icon: const Icon(Icons.delete, color: Colors.white),
+              onPressed: () {
+                _cancelReservation(
+                    reservations[index]['reservationId']); // 予約をキャンセル
+              },
+            ),
+          );
+        },
+      ),
+    );
   }
 
   @override
