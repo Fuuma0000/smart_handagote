@@ -32,17 +32,18 @@ class MyApp extends StatelessWidget {
       ),
     );
     return MaterialApp(
-        title: 'Flutter Demo',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
-          useMaterial3: true,
-        ),
-        // home: const TestLoginPage(),
-        // home: const UserManagementPage(),
-        // home: const MyHomePage(),
-        // home: const TestReservationPage(),
-        // home: const NavBar(),
-        home: const SignInPage());
+      title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
+        useMaterial3: true,
+      ),
+      // home: const SignInPage()
+      home: const NavBar(),
+      // home: const TestLoginPage(),
+      // home: const UserManagementPage(),
+      // home: const MyHomePage(),
+      // home: const TestReservationPage(),
+    );
   }
 }

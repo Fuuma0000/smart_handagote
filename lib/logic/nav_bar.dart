@@ -2,6 +2,9 @@ import 'dart:developer';
 
 import 'package:animated_notch_bottom_bar/animated_notch_bottom_bar/animated_notch_bottom_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:smart_handagote/view/history_page.dart';
+import 'package:smart_handagote/view/home_page.dart';
+import 'package:smart_handagote/view/setting_page.dart';
 
 import '../constant.dart';
 import '../view/test_update_role_page.dart';
@@ -31,9 +34,9 @@ class _NavBarState extends State<NavBar> {
   /// widget list
   /// TODO: ここを使用したいクラスに変更する
   final List<Widget> bottomBarPages = [
-    const Page1(),
-    const Page2(),
-    const Page3(),
+    const HistoryPage(),
+    const HomePage(),
+    const SettingPage(),
     // const UserManagementPage(),
   ];
 
