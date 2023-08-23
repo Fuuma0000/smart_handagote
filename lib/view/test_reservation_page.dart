@@ -154,7 +154,7 @@ class _TestReservationPageState extends State<TestReservationPage> {
             'userName': userName,
             'deviceName': deviceName,
             'startTime': doc['start_time'],
-            'isTunrOff': doc['is_turn_off'],
+            'isTurnOff': doc['is_turn_off'],
           });
         }
       }
@@ -171,7 +171,7 @@ class _TestReservationPageState extends State<TestReservationPage> {
           // Firestoreから取得したタイムスタンプを変換
           final dynamic startTime = logs[index]['startTime'];
           String statusMessage = startTime != null
-              ? (logs[index]['isTunrOff'] ? '切り忘れ' : '使用中')
+              ? (logs[index]['isTurnOff'] ? '切り忘れ' : '使用中')
               : '開始前';
           String timeText = '開始時間: ';
 
