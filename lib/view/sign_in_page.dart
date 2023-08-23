@@ -1,10 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_handagote/view/sign_up_page.dart';
 
 import '../constant.dart';
 import 'components/dialog.dart';
+import 'home_page.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -34,9 +36,22 @@ class _SignInPageState extends State<SignInPage> {
       // ログインに成功したらダイアログを表示
       if (user != null) {
         if (!mounted) return;
+        onPressed() async {
+          // 端末にuser_idを保存
+          SharedPreferences sharedPreferences =
+              await SharedPreferences.getInstance();
+          sharedPreferences.setString('user_id', user.uid);
+
+          // ホーム画面に遷移
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const HomePage()));
+        }
 
         DialogHelper.showCustomDialog(
-            context: context, title: 'ログインしました', message: '');
+            context: context,
+            title: 'ログインしました',
+            message: '',
+            onPressed: onPressed);
       }
     } catch (e) {
       if (!mounted) return;

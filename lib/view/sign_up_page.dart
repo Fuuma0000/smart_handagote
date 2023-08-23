@@ -78,7 +78,6 @@ class _SignUpPageState extends State<SignUpPage> {
           SharedPreferences prefs = await SharedPreferences.getInstance();
           prefs.setString('user_id', user!.uid);
 
-          print('success');
           await Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => const TestReservationPage()));
         }
@@ -92,7 +91,7 @@ class _SignUpPageState extends State<SignUpPage> {
     } catch (e) {
       if (!mounted) return;
       DialogHelper.showCustomDialog(
-          context: context, title: 'エラー', message: '');
+          context: context, title: 'エラー', message: e.toString());
       print(e);
     } finally {
       setState(() {
