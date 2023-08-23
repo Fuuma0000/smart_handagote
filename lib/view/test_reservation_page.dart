@@ -238,7 +238,7 @@ class _TestReservationPageState extends State<TestReservationPage> {
       if (userName != '') {
         reservations.add({
           'reservationId': doc.id,
-          'timestamp': doc['timestamp'],
+          'reservation_time': doc['reservation_time'],
           'userName': userName,
         });
       }
@@ -246,7 +246,8 @@ class _TestReservationPageState extends State<TestReservationPage> {
 
     // 予約一覧をタイムスタンプで昇順にソート
     // TODO:_TypeError (type 'Null' is not a subtype of type 'Timestamp' of 'other')になる発生条件が不明
-    reservations.sort((a, b) => a['timestamp'].compareTo(b['timestamp']));
+    reservations
+        .sort((a, b) => a['reservation_time'].compareTo(b['reservation_time']));
     return reservations;
   }
 
@@ -257,7 +258,7 @@ class _TestReservationPageState extends State<TestReservationPage> {
         itemCount: reservations.length,
         itemBuilder: (BuildContext context, int index) {
           // Firestoreから取得したタイムスタンプを変換
-          final dynamic timestamp = reservations[index]['timestamp'];
+          final dynamic timestamp = reservations[index]['reservation_time'];
 
           // タイムスタンプがnullの場合はエラーメッセージを表示
           if (timestamp == null || timestamp is! Timestamp) {
@@ -276,7 +277,8 @@ class _TestReservationPageState extends State<TestReservationPage> {
             );
           }
           // タイムスタンプをDateTimeに変換
-          DateTime reservationTime = reservations[index]['timestamp'].toDate();
+          DateTime reservationTime =
+              reservations[index]['reservation_time'].toDate();
 
           // 予約時間を指定のフォーマットで表示
           String formattedTime =

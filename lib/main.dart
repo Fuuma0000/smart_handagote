@@ -42,7 +42,6 @@ class MyApp extends StatelessWidget {
       home: const NavBar(),
       // home: const TestLoginPage(),
       // home: const UserManagementPage(),
-      // home: const MyHomePage(),
       // home: const TestReservationPage(),
     );
   }

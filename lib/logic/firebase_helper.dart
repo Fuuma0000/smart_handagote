@@ -35,7 +35,7 @@ class FirebaseHelper {
   Future<void> addReservationEntry(String userId) async {
     await _firestore.collection('reservations').add({
       'user_id': userId,
-      'timestamp': FieldValue.serverTimestamp(),
+      'reservation_time': FieldValue.serverTimestamp(),
     });
   }
 
@@ -57,6 +57,17 @@ class FirebaseHelper {
       return deviceDoc['device_name'];
     }
     return '';
+  }
+
+  // デバイス全てを取得する関数
+  Future<Map<String, String>> getAllDevices() async {
+    Map<String, String> devices = {};
+    QuerySnapshot devicesQuerySnapshot =
+        await FirebaseFirestore.instance.collection('devices').get();
+    devicesQuerySnapshot.docs.forEach((deviceDoc) {
+      devices[deviceDoc.id] = deviceDoc['device_name'];
+    });
+    return devices;
   }
 
   // reservationsのコレクションにuser_idが一致するドキュメントがあるか検索する関数

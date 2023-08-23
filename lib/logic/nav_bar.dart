@@ -32,7 +32,6 @@ class _NavBarState extends State<NavBar> {
   }
 
   /// widget list
-  /// TODO: ここを使用したいクラスに変更する
   final List<Widget> bottomBarPages = [
     const HistoryPage(),
     const HomePage(),
@@ -44,9 +43,11 @@ class _NavBarState extends State<NavBar> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Smart Handagote',
-          style: TextStyle(color: Constant.lightGray),
+        title: const Center(
+          child: Text(
+            'KOTE Alert',
+            style: TextStyle(color: Constant.lightGray),
+          ),
         ),
         backgroundColor: Constant.darkGray,
       ),
