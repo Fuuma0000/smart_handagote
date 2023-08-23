@@ -1,5 +1,6 @@
 import * as admin from 'firebase-admin';
 import { sendNotification } from './notification';
+import * as functions from 'firebase-functions';
 
 export const checkNextReservation = async (device_id: string) => {
   const logsCollection = await admin.firestore().collection('logs');
@@ -17,6 +18,16 @@ export const checkNextReservation = async (device_id: string) => {
   const nextReservationData = reservationDoc.docs[0].data();
   // const device_id = (await logRef.get()).data()!.device_id;
 
+  // すでにlogsコレクションに追加されているか確認
+  const logDoc = await logsCollection.where('user_id', '==', nextReservationData.user_id).where('start_time', '==', null).get();
+  if (!logDoc.empty) {
+    // res.status(200).send('success: already added');
+    return {
+      status: 200,
+      message: 'success: already added',
+    };
+  }
+
   // 次の順番の人をlogsコレクションに追加
   const logData = {
     user_id: nextReservationData.user_id,
@@ -26,6 +37,7 @@ export const checkNextReservation = async (device_id: string) => {
     is_turn_off: false,
   };
   await logsCollection.add(logData);
+  functions.logger.info('次の人を追加しました');
 
   // 通知を送信
   const userDoc = await admin.firestore().collection('users').doc(nextReservationData.user_id).get();

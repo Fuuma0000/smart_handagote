@@ -30,6 +30,8 @@ export const startUsing = functions.https.onRequest(async (req, res) => {
       const logDocRef = logsCollection.doc(myLogDoc.docs[0].id);
       await logDocRef.update({ device_id: device_id, start_time: Timestamp.now() });
       log_id = myLogDoc.docs[0].id;
+      res.status(200).json({ log_id: log_id });
+      return;
     } else {
       // reservationsコレクションのチェック（他の人の予約が来ている場合）
       const reservationDocs = await reservationCollection.get();
@@ -48,9 +50,8 @@ export const startUsing = functions.https.onRequest(async (req, res) => {
       };
       const logRef = await logsCollection.add(logData);
       log_id = logRef.id;
+      res.status(200).json({ log_id: log_id });
     }
-
-    res.status(200).json({ log_id: log_id });
   } catch (error) {
     functions.logger.error('Error', error);
     res.status(500).send('Internal Server Error');
