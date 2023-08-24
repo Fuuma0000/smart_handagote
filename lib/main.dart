@@ -53,6 +53,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
+        fontFamily: 'NotoSansJP',
         useMaterial3: true,
       ),
       // home: const SignInPage()
