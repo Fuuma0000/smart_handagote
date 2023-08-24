@@ -4,6 +4,7 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:smart_handagote/bluetooth_constants.dart';
 import 'package:smart_handagote/logic/firebase_helper.dart';
 import 'package:collection/collection.dart';
+import 'package:smart_handagote/view/components/dialog.dart';
 
 class BleTest extends StatefulWidget {
   const BleTest({Key? key});
@@ -37,6 +38,10 @@ class _BleTestState extends State<BleTest> {
           uid = user.uid;
           name = name;
         });
+      } else {
+        if (!mounted) return;
+        DialogHelper.showCustomDialog(
+            context: context, title: 'ログインしてください', message: '');
       }
     } catch (e) {
       setState(() {
