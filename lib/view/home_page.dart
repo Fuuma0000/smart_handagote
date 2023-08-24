@@ -9,8 +9,8 @@ import '../logic/firebase_helper.dart';
 import 'components/dialog.dart';
 
 class HomePage extends StatefulWidget {
-  String userID;
-  HomePage({super.key, required this.userID});
+  String myID;
+  HomePage({super.key, required this.myID});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -82,6 +82,7 @@ class _HomePageState extends State<HomePage> {
         reservations.add({
           'reservationId': doc.id,
           'reservation_time': doc['reservation_time'],
+          'userId': doc['user_id'],
           'userName': userName,
         });
       }
@@ -210,7 +211,7 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           children: [
             // はんだごて一覧テキスト
-            _titleWidget('はんだごて一覧: ${widget.userID}'),
+            _titleWidget('はんだごて一覧'),
             // はんだごて一覧
             _usingWidget(),
             const SizedBox(height: 20),
@@ -430,6 +431,10 @@ class _HomePageState extends State<HomePage> {
 
   // 予約者一覧
   Widget _reservationWidget(Map<String, dynamic> reservation, int index) {
+    Color indexColor = (reservation['userId'] == widget.myID)
+        ? Constant.orange
+        : Constant.white;
+
     return Container(
       width: MediaQuery.of(context).size.width * 0.8,
       height: 60,
@@ -445,7 +450,7 @@ class _HomePageState extends State<HomePage> {
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: Constant.black,
+              color: indexColor,
             ),
             child: Text(
               index.toString(),

@@ -42,7 +42,7 @@ class _NavBarState extends State<NavBar> {
     /// widget list
     bottomBarPages = [
       const HistoryPage(),
-      HomePage(userID: widget.userID),
+      HomePage(myID: widget.userID),
       const SettingPage(),
       // const UserManagementPage(),
     ];

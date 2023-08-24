@@ -8,4 +8,5 @@ class Constant {
   static const Color lightGray = Color(0xFFDEDBDB);
   static const Color white = Color(0xFF616161);
   static const Color green = Color(0xFF268785);
+  static const Color orange = Color(0xFFD17C3E);
 }
