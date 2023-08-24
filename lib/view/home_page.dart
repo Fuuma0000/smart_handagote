@@ -449,9 +449,8 @@ class _HomePageState extends State<HomePage> {
 
   // 予約者一覧
   Widget _reservationWidget(Map<String, dynamic> reservation, int index) {
-    Color indexColor = (reservation['userId'] == widget.myID)
-        ? Constant.orange
-        : Constant.white;
+    bool isMyReservation = (reservation['userId'] == widget.myID);
+    Color indexColor = isMyReservation ? Constant.orange : Constant.white;
 
     return Container(
       width: MediaQuery.of(context).size.width * 0.8,
@@ -477,7 +476,21 @@ class _HomePageState extends State<HomePage> {
           ),
           const SizedBox(width: 20),
           Text(reservation['userName'],
-              style: const TextStyle(color: Constant.lightGray, fontSize: 18))
+              style: const TextStyle(color: Constant.lightGray, fontSize: 18)),
+          const Spacer(),
+          // 自分の予約の場合は削除ボタンを表示
+          if (isMyReservation)
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                  foregroundColor: Constant.orange,
+                  backgroundColor: Constant.darkGray,
+                  shape: const CircleBorder(),
+                  minimumSize: const Size(60, 60)),
+              onPressed: () {
+                _cancelReservation(reservation['reservationId']);
+              },
+              child: const Icon(FontAwesomeIcons.trash),
+            ),
         ],
       ),
     );
