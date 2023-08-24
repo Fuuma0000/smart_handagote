@@ -170,6 +170,12 @@ class _BleTestState extends State<BleTest> {
       // 送信用のCharacteristicが取得できた場合にデータを書き込む
       if (sendCharacteristic != null) {
         await writeToCharacteristic(sendCharacteristic, sendData);
+      } else {
+        if (!mounted) return;
+        DialogHelper.showCustomDialog(
+            context: context,
+            title: 'エラー',
+            message: 'Characteristicの取得に失敗しました');
       }
     }
   }
