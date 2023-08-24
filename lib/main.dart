@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:smart_handagote/logic/nav_bar.dart';
 import 'package:smart_handagote/view/sign_in_page.dart';
 import 'package:smart_handagote/view/sign_up_page.dart';
+import 'package:smart_handagote/view/test_missing_logs_page.dart';
 import 'package:smart_handagote/view/test_reservation_page.dart';
 import 'package:smart_handagote/view/test_update_role_page.dart';
 
@@ -49,7 +50,7 @@ class MyApp extends StatelessWidget {
       ),
       // home: const SignInPage()
       home: home,
-      // home: const TestLoginPage(),
+      // home: const MissingLogsPage(),
       // home: const UserManagementPage(),
       // home: const TestReservationPage(),
     );
