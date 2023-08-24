@@ -44,7 +44,10 @@ dependencies:
   firebase_messaging: ^14.6.6
   flutter_local_notifications: ^15.1.0+1
   font_awesome_flutter: ^10.5.0
-  flutter_blue_plus: ^1.14.11
+  flutter_blue_plus:
+    git:
+      url: https://github.com/boskokg/flutter_blue_plus.git
+      ref: 1.6.1 # use for Android, comment out for macOS
 
 dev_dependencies:
   flutter_test:
