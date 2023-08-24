@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_handagote/constant.dart';
@@ -219,6 +220,22 @@ class _HomePageState extends State<HomePage> {
             _titleWidget('予約一覧'),
             // 予約一覧
             _allreservationWidget(),
+            Align(
+                alignment: Alignment.bottomRight,
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 20.0),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Constant.green,
+                        foregroundColor: Constant.lightGray,
+                        shape: const CircleBorder(),
+                        minimumSize: const Size(60, 60)),
+                    onPressed: () {
+                      _makeReservation();
+                    },
+                    child: const Icon(FontAwesomeIcons.plus),
+                  ),
+                ))
           ],
         ),
       ),
@@ -403,7 +420,8 @@ class _HomePageState extends State<HomePage> {
 
   // 予約一覧を表示するウィジェット
   Widget _buildReservationList(List<Map<String, dynamic>> reservations) {
-    return Expanded(
+    return SizedBox(
+      height: MediaQuery.of(context).size.height * 0.35,
       child: ListView.builder(
         itemCount: reservations.length,
         itemBuilder: (BuildContext context, int index) {
