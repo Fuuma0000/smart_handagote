@@ -33,13 +33,20 @@ class MyApp extends StatelessWidget {
         systemNavigationBarColor: Constant.black,
       ),
     );
-    String userID = FirebaseAuth.instance.currentUser!.uid;
-    // userIDが空の場合はログイン画面に遷移
-    Widget? home = userID.isEmpty
-        ? const SignInPage()
-        : NavBar(
-            userID: userID,
-          );
+
+    // String userID = FirebaseAuth.instance.currentUser!.uid;
+    // // userIDが空の場合はログイン画面に遷移
+    // Widget? home = userID.isEmpty
+    //     ? const SignInPage()
+    //     : NavBar(
+    //         userID: userID,
+    //       );
+    Widget? home = const SignInPage();
+    FirebaseAuth.instance.authStateChanges().listen((user) {
+      if (user != null) {
+        home = NavBar(userID: user.uid);
+      }
+    });
 
     return MaterialApp(
       title: 'Flutter Demo',
