@@ -63,7 +63,7 @@ class _HistoryPageState extends State<HistoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Constant.darkGray,
+      backgroundColor: Constant.black,
       body: _missingLogWidget(),
     );
   }
@@ -79,7 +79,8 @@ class _HistoryPageState extends State<HistoryPage> {
         }
 
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator(); // データがロード中の間、進行中のインジケータを表示
+          return const Center(
+              child: CircularProgressIndicator()); // データがロード中の間、進行中のインジケータを表示
         }
         return FutureBuilder<List<Map<String, dynamic>>>(
           future:
@@ -87,7 +88,9 @@ class _HistoryPageState extends State<HistoryPage> {
           builder: (BuildContext context,
               AsyncSnapshot<List<Map<String, dynamic>>> dataSnapshot) {
             if (dataSnapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator(); // データがロード中の間、進行中のインジケータを表示
+              return const Center(
+                  child:
+                      CircularProgressIndicator()); // データがロード中の間、進行中のインジケータを表示
             }
 
             List<Map<String, dynamic>> reservations =

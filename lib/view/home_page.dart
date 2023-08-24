@@ -268,7 +268,11 @@ class _HomePageState extends State<HomePage> {
         }
 
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator(); // データがロード中の間、進行中のインジケータを表示
+          return const SizedBox(
+              height: 130,
+              child: Center(
+                  child:
+                      CircularProgressIndicator())); // データがロード中の間、進行中のインジケータを表示
         }
 
         return FutureBuilder<List<Map<String, dynamic>>>(
@@ -276,7 +280,11 @@ class _HomePageState extends State<HomePage> {
           builder: (BuildContext context,
               AsyncSnapshot<List<Map<String, dynamic>>> dataSnapshot) {
             if (dataSnapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator(); // データがロード中の間、進行中のインジケータを表示
+              return const SizedBox(
+                  height: 131,
+                  child: Center(
+                      child:
+                          CircularProgressIndicator())); // データがロード中の間、進行中のインジケータを表示
             }
 
             List<Map<String, dynamic>> logs =
@@ -396,7 +404,11 @@ class _HomePageState extends State<HomePage> {
         }
 
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator(); // データがロード中の間、進行中のインジケータを表示
+          return const SizedBox(
+              height: 131,
+              child: Center(
+                  child:
+                      CircularProgressIndicator())); // データがロード中の間、進行中のインジケータを表示
         }
 
         return FutureBuilder<List<Map<String, dynamic>>>(
@@ -405,7 +417,11 @@ class _HomePageState extends State<HomePage> {
           builder: (BuildContext context,
               AsyncSnapshot<List<Map<String, dynamic>>> dataSnapshot) {
             if (dataSnapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator(); // データがロード中の間、進行中のインジケータを表示
+              return const SizedBox(
+                  height: 131,
+                  child: Center(
+                      child:
+                          CircularProgressIndicator())); // データがロード中の間、進行中のインジケータを表示
             }
 
             List<Map<String, dynamic>> reservations =
