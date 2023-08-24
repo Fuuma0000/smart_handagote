@@ -19,6 +19,7 @@ class _HomePageState extends State<HomePage> {
   late Stream<QuerySnapshot> _reservationsStream;
   late Stream<QuerySnapshot> _logsStream;
   bool _isLoadReserving = false; // 予約中かどうかを管理するフラグ
+  List<String> devices = ['F8tskdHqB19OUUA8cgVI', 'GmnzaeS39Go77Uto1aFu'];
 
   @override
   void initState() {
@@ -260,13 +261,47 @@ class _HomePageState extends State<HomePage> {
 
             List<Map<String, dynamic>> logs =
                 dataSnapshot.data ?? []; // ロードされた予約データ
+            List<Map<String, dynamic>> data = [
+              {
+                'deviceId': devices[0],
+                'userName': '',
+                'deviceName': 'はんだごて1号',
+                'startTime': null,
+                'state': '未使用',
+              },
+              {
+                'deviceId': devices[1],
+                'userName': '',
+                'deviceName': 'はんだごて2号',
+                'startTime': null,
+                'state': '未使用',
+              }
+            ];
+            // はんだごて1・2の使用状況
+            // dataのdeviceIdと一致した場合はデータをdataに追加
+            for (var log in logs) {
+              for (var d in data) {
+                if (log['deviceId'] == d['deviceId']) {
+                  d['userName'] = log['userName'];
+                  d['deviceName'] = log['deviceName'];
+                  d['startTime'] = log['startTime'];
+                  if (log['startTime'] == null) {
+                    d['state'] = '使用前';
+                  } else if (log['isTurnOff']) {
+                    d['state'] = '切り忘れ';
+                  } else {
+                    d['state'] = '使用中';
+                  }
+                }
+              }
+            }
 
             // TODO: はんだごて表示
             return Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _handagoteWidget(logs[0]),
-                _handagoteWidget(logs[1]),
+                _handagoteWidget(data[0]),
+                _handagoteWidget(data[1]),
               ],
             );
           },
@@ -276,7 +311,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _handagoteWidget(Map<String, dynamic> log) {
-    String timeText = '未定';
+    String timeText = '';
     if (log['startTime'] != null) {
       String formattedTime =
           DateFormat('HH:mm').format(log['startTime'].toDate());
@@ -302,7 +337,7 @@ class _HomePageState extends State<HomePage> {
           const SizedBox(height: 10),
           // 空き状況
           Text(
-            log['isTurnOff'] ? '切り忘れ' : '使用中',
+            log['state'],
             style: const TextStyle(
               fontSize: 18,
               color: Constant.lightGray,
@@ -356,7 +391,6 @@ class _HomePageState extends State<HomePage> {
             List<Map<String, dynamic>> reservations =
                 dataSnapshot.data ?? []; // ロードされた予約データ
 
-            // TODO: 予約者一覧！
             return _buildReservationList(reservations); // 予約データを表示するウィジェットを返す
           },
         );
@@ -373,21 +407,10 @@ class _HomePageState extends State<HomePage> {
           // Firestoreから取得したタイムスタンプを変換
           final dynamic timestamp = reservations[index]['reservation_time'];
 
-          // タイムスタンプがnullの場合はエラーメッセージを表示
+          // TODO: タイムスタンプがnullの場合はエラーメッセージを表示
           if (timestamp == null || timestamp is! Timestamp) {
-            return ListTile(
-              title: Text('${reservations[index]['userName']}'),
-              subtitle: const Text('Invalid timestamp',
-                  style: TextStyle(
-                      color: Colors.white)), // Display an error message
-              trailing: IconButton(
-                icon: const Icon(Icons.delete, color: Colors.white),
-                onPressed: () {
-                  _cancelReservation(reservations[index]
-                      ['reservationId']); // Cancel reservation
-                },
-              ),
-            );
+            return const Text('Invalid timestamp',
+                style: TextStyle(color: Colors.white));
           }
           // タイムスタンプをDateTimeに変換
           DateTime reservationTime =
