@@ -44,7 +44,11 @@ class _SignInPageState extends State<SignInPage> {
 
           // ホーム画面に遷移
           Navigator.push(
-              context, MaterialPageRoute(builder: (context) => const NavBar()));
+              context,
+              MaterialPageRoute(
+                  builder: (context) => NavBar(
+                        userID: user.uid,
+                      )));
         }
 
         DialogHelper.showCustomDialog(

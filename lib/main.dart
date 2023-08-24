@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -31,6 +32,14 @@ class MyApp extends StatelessWidget {
         systemNavigationBarColor: Constant.black,
       ),
     );
+    String userID = FirebaseAuth.instance.currentUser!.uid;
+    // userIDが空の場合はログイン画面に遷移
+    Widget? home = userID.isEmpty
+        ? const SignInPage()
+        : NavBar(
+            userID: userID,
+          );
+
     return MaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
@@ -39,7 +48,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       // home: const SignInPage()
-      home: const NavBar(),
+      home: home,
       // home: const TestLoginPage(),
       // home: const UserManagementPage(),
       // home: const TestReservationPage(),

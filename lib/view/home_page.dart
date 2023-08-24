@@ -2,13 +2,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_handagote/constant.dart';
 
 import '../logic/firebase_helper.dart';
 import 'components/dialog.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  String userID;
+  HomePage({super.key, required this.userID});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -208,7 +210,7 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           children: [
             // はんだごて一覧テキスト
-            _titleWidget('はんだごて一覧'),
+            _titleWidget('はんだごて一覧: ${widget.userID}'),
             // はんだごて一覧
             _usingWidget(),
             const SizedBox(height: 20),

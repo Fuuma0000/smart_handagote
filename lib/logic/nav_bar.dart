@@ -10,13 +10,17 @@ import '../constant.dart';
 import '../view/test_update_role_page.dart';
 
 class NavBar extends StatefulWidget {
-  const NavBar({Key? key}) : super(key: key);
+  String userID;
+
+  NavBar({super.key, required this.userID});
 
   @override
   State<NavBar> createState() => _NavBarState();
 }
 
 class _NavBarState extends State<NavBar> {
+  List<Widget> bottomBarPages = [];
+
   /// Controller to handle PageView and also handles initial page
   final _pageController = PageController(initialPage: 1);
 
@@ -31,13 +35,18 @@ class _NavBarState extends State<NavBar> {
     super.dispose();
   }
 
-  /// widget list
-  final List<Widget> bottomBarPages = [
-    const HistoryPage(),
-    const HomePage(),
-    const SettingPage(),
-    // const UserManagementPage(),
-  ];
+  @override
+  void initState() {
+    super.initState();
+
+    /// widget list
+    bottomBarPages = [
+      const HistoryPage(),
+      HomePage(userID: widget.userID),
+      const SettingPage(),
+      // const UserManagementPage(),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
