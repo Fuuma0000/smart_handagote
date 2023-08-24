@@ -212,9 +212,12 @@ class _SignUpPageState extends State<SignUpPage> {
             decoration: InputDecoration(
               suffixIcon: isObscure
                   ? IconButton(
-                      icon: Icon(_showPassword
-                          ? FontAwesomeIcons.solidEye
-                          : FontAwesomeIcons.solidEyeSlash),
+                      icon: Icon(
+                        _showPassword
+                            ? FontAwesomeIcons.solidEye
+                            : FontAwesomeIcons.solidEyeSlash,
+                        size: 18,
+                      ),
                       onPressed: () {
                         setState(() {
                           _showPassword = !_showPassword;
