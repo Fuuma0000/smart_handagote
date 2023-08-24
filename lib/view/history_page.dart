@@ -56,6 +56,7 @@ class _HistoryPageState extends State<HistoryPage> {
         });
       }
     }
+    missingLogs.sort((a, b) => b['startTime'].compareTo(a['startTime']));
     return missingLogs;
   }
 
