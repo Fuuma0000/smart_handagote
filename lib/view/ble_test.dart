@@ -17,8 +17,8 @@ class _BleTestState extends State<BleTest> {
   List<BluetoothDevice> devices = [];
   final TextEditingController controller = TextEditingController();
   BluetoothDevice? device;
-  String? name;
-  String? uid;
+  String name = "default";
+  String uid = "default";
 
   @override
   void initState() {
@@ -68,9 +68,9 @@ class _BleTestState extends State<BleTest> {
             // 対応しているserviceが含まれていれば、デバイス一覧の配列に追加する。
             // TODO: テスト用にコメントアウトしている。
             // 自分の端末のみを対象にするため。
-            // if (targetService) {
-            devices.add(result.device);
-            // }
+            if (targetService) {
+              devices.add(result.device);
+            }
           }
         }
       });
