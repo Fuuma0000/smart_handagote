@@ -58,7 +58,7 @@ class _NavBarState extends State<NavBar> {
         title: const Center(
           child: Text(
             'KOTE Alert',
-            style: TextStyle(color: Constant.lightGray),
+            style: TextStyle(color: Constant.white),
           ),
         ),
         backgroundColor: Constant.darkGray,
@@ -86,33 +86,33 @@ class _NavBarState extends State<NavBar> {
                 BottomBarItem(
                   inActiveItem: Icon(
                     Icons.history,
-                    color: Constant.lightGray,
+                    color: Constant.white,
                   ),
                   activeItem: Icon(
                     Icons.history,
-                    color: Constant.lightGray,
+                    color: Constant.yellow,
                   ),
                   itemLabel: 'Page 1',
                 ),
                 BottomBarItem(
                   inActiveItem: Icon(
                     Icons.home_filled,
-                    color: Constant.lightGray,
+                    color: Constant.white,
                   ),
                   activeItem: Icon(
                     Icons.home_filled,
-                    color: Constant.lightGray,
+                    color: Constant.yellow,
                   ),
                   itemLabel: 'Page 2',
                 ),
                 BottomBarItem(
                   inActiveItem: Icon(
                     Icons.settings,
-                    color: Constant.lightGray,
+                    color: Constant.white,
                   ),
                   activeItem: Icon(
                     Icons.settings,
-                    color: Constant.lightGray,
+                    color: Constant.yellow,
                   ),
                   itemLabel: 'Page 3',
                 ),

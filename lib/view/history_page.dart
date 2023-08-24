@@ -143,14 +143,13 @@ class _HistoryPageState extends State<HistoryPage> {
                   ),
                   child: Text(timeText,
                       style: const TextStyle(
-                          color: Constant.lightGray, fontSize: 20))),
+                          color: Constant.white, fontSize: 20))),
               Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   child: Text(
                     logs[index]['userName'],
-                    style: const TextStyle(
-                        color: Constant.lightGray, fontSize: 20),
+                    style: const TextStyle(color: Constant.white, fontSize: 20),
                   )),
             ],
           );

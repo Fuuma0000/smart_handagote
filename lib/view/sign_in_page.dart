@@ -143,10 +143,10 @@ class _SignInPageState extends State<SignInPage> {
                                   builder: (context) => const SignUpPage()));
                         },
                         icon: const Icon(FontAwesomeIcons.angleLeft,
-                            color: Constant.lightGray),
+                            color: Constant.white),
                         label: const Text('新規登録はこちら',
                             style: TextStyle(
-                                color: Constant.lightGray, fontSize: 16))),
+                                color: Constant.white, fontSize: 16))),
                   ],
                 ),
               ),
@@ -164,7 +164,7 @@ class _SignInPageState extends State<SignInPage> {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          color: Constant.lightGray,
+          color: Constant.white,
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),

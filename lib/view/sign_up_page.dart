@@ -179,12 +179,12 @@ class _SignUpPageState extends State<SignUpPage> {
                         },
                         icon: const Icon(
                           FontAwesomeIcons.angleLeft,
-                          color: Constant.lightGray,
+                          color: Constant.white,
                           size: 14,
                         ),
                         label: const Text('アカウントをお持ちのかたはこちら',
                             style: TextStyle(
-                                color: Constant.lightGray, fontSize: 14))),
+                                color: Constant.white, fontSize: 14))),
                   ],
                 ),
               ),
@@ -202,7 +202,7 @@ class _SignUpPageState extends State<SignUpPage> {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          color: Constant.lightGray,
+          color: Constant.white,
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
