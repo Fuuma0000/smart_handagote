@@ -212,7 +212,7 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           children: [
             // はんだごて一覧テキスト
-            _titleWidget('はんだごて一覧'),
+            _titleWidget('機器一覧'),
             // はんだごて一覧
             _usingWidget(),
             const SizedBox(height: 20),
@@ -247,11 +247,13 @@ class _HomePageState extends State<HomePage> {
       margin: const EdgeInsets.symmetric(vertical: 20),
       padding: const EdgeInsets.symmetric(vertical: 3),
       decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: Colors.white)),
+        border: Border(
+          bottom: BorderSide(color: Colors.white),
+        ),
       ),
       child: Text(
         title,
-        style: TextStyle(fontSize: 18, color: Constant.white),
+        style: const TextStyle(fontSize: 20, color: Constant.white),
       ),
     );
   }
@@ -269,7 +271,7 @@ class _HomePageState extends State<HomePage> {
 
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const SizedBox(
-              height: 130,
+              height: 169,
               child: Center(
                   child:
                       CircularProgressIndicator())); // データがロード中の間、進行中のインジケータを表示
@@ -281,7 +283,7 @@ class _HomePageState extends State<HomePage> {
               AsyncSnapshot<List<Map<String, dynamic>>> dataSnapshot) {
             if (dataSnapshot.connectionState == ConnectionState.waiting) {
               return const SizedBox(
-                  height: 131,
+                  height: 169,
                   child: Center(
                       child:
                           CircularProgressIndicator())); // データがロード中の間、進行中のインジケータを表示
@@ -293,14 +295,14 @@ class _HomePageState extends State<HomePage> {
               {
                 'deviceId': devices[0],
                 'userName': '',
-                'deviceName': 'はんだごて1号',
+                'deviceName': 'No.1',
                 'startTime': null,
                 'state': '未使用',
               },
               {
                 'deviceId': devices[1],
                 'userName': '',
-                'deviceName': 'はんだごて2号',
+                'deviceName': 'No.2',
                 'startTime': null,
                 'state': '未使用',
               }
@@ -345,47 +347,61 @@ class _HomePageState extends State<HomePage> {
           DateFormat('HH:mm').format(log['startTime'].toDate());
       timeText = '$formattedTime ~';
     }
+    // borderColorをlog['state']によって変更
+    Color borderColor;
+    if (log['state'] == '使用前') {
+      borderColor = Constant.yellow;
+    } else if (log['state'] == '使用中') {
+      borderColor = Constant.orange;
+    } else {
+      borderColor = Constant.green;
+    }
 
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      width: 160,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        color: Constant.darkGray,
+        border: Border.all(
+          width: 5,
+          color: borderColor,
+        ),
+        color: Colors.transparent,
       ),
       child: Column(
         children: [
           // はんだごて名
           Text(
             log['deviceName'],
-            style: const TextStyle(
-              fontSize: 18,
-              color: Constant.white,
-            ),
+            style: const TextStyle(fontSize: 18, color: Constant.white),
           ),
           const SizedBox(height: 10),
           // 空き状況
-          Text(
-            log['state'],
-            style: const TextStyle(
-              fontSize: 18,
-              color: Constant.white,
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 18),
+            decoration: BoxDecoration(
+              color: borderColor,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text(
+              log['state'],
+              style: const TextStyle(
+                  fontSize: 18,
+                  color: Constant.white,
+                  fontWeight: FontWeight.bold),
             ),
           ),
+          const SizedBox(height: 8),
           // 名前
           Text(
             log['userName'],
-            style: const TextStyle(
-              fontSize: 18,
-              color: Constant.white,
-            ),
+            style: const TextStyle(fontSize: 18, color: Constant.white),
           ),
+          const SizedBox(height: 8),
           // 時間
           Text(
             timeText,
-            style: const TextStyle(
-              fontSize: 16,
-              color: Constant.white,
-            ),
+            style: const TextStyle(fontSize: 16, color: Constant.white),
           ),
         ],
       ),
@@ -405,7 +421,7 @@ class _HomePageState extends State<HomePage> {
 
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const SizedBox(
-              height: 131,
+              height: 169,
               child: Center(
                   child:
                       CircularProgressIndicator())); // データがロード中の間、進行中のインジケータを表示
@@ -418,7 +434,7 @@ class _HomePageState extends State<HomePage> {
               AsyncSnapshot<List<Map<String, dynamic>>> dataSnapshot) {
             if (dataSnapshot.connectionState == ConnectionState.waiting) {
               return const SizedBox(
-                  height: 131,
+                  height: 169,
                   child: Center(
                       child:
                           CircularProgressIndicator())); // データがロード中の間、進行中のインジケータを表示
@@ -437,7 +453,7 @@ class _HomePageState extends State<HomePage> {
   // 予約一覧を表示するウィジェット
   Widget _buildReservationList(List<Map<String, dynamic>> reservations) {
     return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.35,
+      height: MediaQuery.of(context).size.height * 0.33,
       child: ListView.builder(
         itemCount: reservations.length,
         itemBuilder: (BuildContext context, int index) {
