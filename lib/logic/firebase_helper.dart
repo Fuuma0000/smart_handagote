@@ -159,6 +159,18 @@ class FirebaseHelper {
     return true;
   }
 
+  // 学籍番号が自分以外と被らないかチェックする関数
+  Future<bool> isStudentIdUniqueExceptMe(
+      String studentId, String userId) async {
+    QuerySnapshot querySnapshot = await _firestore
+        .collection('users')
+        .where('student_id', isEqualTo: studentId)
+        // .where('user_id', isNotEqualTo: userId)
+        .where(FieldPath.documentId, isNotEqualTo: userId)
+        .get();
+    return querySnapshot.size <= 0;
+  }
+
   // Firestore にユーザー情報を保存する関数
   Future<void> saveUserInfo(
       String userId, String name, String studentId, String token) async {
@@ -173,5 +185,13 @@ class FirebaseHelper {
   // Firestoreにトークンをupdateする関数
   Future<void> updateToken(String userId, String token) async {
     await _firestore.collection('users').doc(userId).update({'token': token});
+  }
+
+  // 学籍番号と名前を更新する関数
+  Future<void> updateUser(String userId, String name, String studentId) async {
+    await _firestore
+        .collection('users')
+        .doc(userId)
+        .update({'user_name': name, 'student_id': studentId});
   }
 }
