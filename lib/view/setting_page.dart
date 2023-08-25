@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:smart_handagote/constant.dart';
+import 'package:smart_handagote/view/components/inputDialog.dart';
+
+import 'add_device_page.dart';
 
 class SettingPage extends StatefulWidget {
   const SettingPage({super.key});
@@ -10,6 +13,8 @@ class SettingPage extends StatefulWidget {
 }
 
 class _SettingPageState extends State<SettingPage> {
+  String name = '';
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,7 +35,7 @@ class _SettingPageState extends State<SettingPage> {
             'はんだごて追加',
             FontAwesomeIcons.circlePlus,
             Constant.grey,
-            () {
+            () async {
               // TODO: はんだごて追加
             },
           ),
@@ -38,8 +43,12 @@ class _SettingPageState extends State<SettingPage> {
             'ユーザー承認',
             FontAwesomeIcons.check,
             Constant.grey,
-            () {
+            () async {
               // TODO: ユーザー承認
+              final result = await DialogUtils.showEditingDialog(context, name);
+              setState(() {
+                name = result ?? name;
+              });
             },
           ),
           _settingBtnWidget(

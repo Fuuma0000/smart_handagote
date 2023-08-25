@@ -350,9 +350,11 @@ class _HomePageState extends State<HomePage> {
     // borderColorをlog['state']によって変更
     Color borderColor;
     if (log['state'] == '使用前') {
-      borderColor = Constant.yellow;
+      borderColor = Constant.pink;
     } else if (log['state'] == '使用中') {
       borderColor = Constant.orange;
+    } else if (log['state'] == '切り忘れ') {
+      borderColor = Constant.yellow;
     } else {
       borderColor = Constant.green;
     }

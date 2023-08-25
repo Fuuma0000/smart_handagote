@@ -11,5 +11,5 @@ class Constant {
   static const Color green = Color(0xFF268785);
   static const Color orange = Color(0xFFD17C3E);
   static const Color yellow = Color(0xFFF2C162);
-  static const Color pink = Color(0xFFB93757);
+  static const Color pink = Color(0xFFAC3653);
 }
