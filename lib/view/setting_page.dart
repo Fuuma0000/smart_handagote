@@ -6,6 +6,7 @@ import 'package:smart_handagote/view/add_fingerprint_page.dart';
 import 'package:smart_handagote/view/components/checkDialog.dart';
 import 'package:smart_handagote/view/components/inputDialog.dart';
 import 'package:smart_handagote/view/sign_in_page.dart';
+import 'package:smart_handagote/view/update_role_page.dart';
 import 'package:smart_handagote/view/user_edit_page.dart';
 
 class SettingPage extends StatefulWidget {
@@ -51,10 +52,9 @@ class _SettingPageState extends State<SettingPage> {
             FontAwesomeIcons.check,
             Constant.grey,
             () async {
-              final result = await DialogUtils.showEditingDialog(context, name);
-              setState(() {
-                name = result ?? name;
-              });
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return const UpdateRolePage();
+              }));
             },
           ),
           // ログアウト
