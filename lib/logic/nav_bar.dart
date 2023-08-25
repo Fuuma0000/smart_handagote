@@ -60,7 +60,12 @@ class _NavBarState extends State<NavBar> {
         title: const Center(
           child: Text(
             'KOTE Alert',
-            style: TextStyle(color: Constant.white),
+            style: TextStyle(
+              color: Constant.white,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 1.2,
+              fontFamily: 'Quicksand',
+            ),
           ),
         ),
         backgroundColor: Constant.darkGray,
