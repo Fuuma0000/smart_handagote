@@ -4,7 +4,6 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:smart_handagote/bluetooth_constants.dart';
 import 'package:smart_handagote/logic/firebase_helper.dart';
 import 'package:collection/collection.dart';
-import 'package:smart_handagote/view/components/dialog.dart';
 
 class BleTest extends StatefulWidget {
   const BleTest({Key? key});
@@ -26,6 +25,7 @@ class _BleTestState extends State<BleTest> {
   @override
   void initState() {
     super.initState();
+    // TODO: awaitだから、ここでawaitを使うとエラーになる
     Future(() async {
       fetchDataFromFirebase(); // Firebaseからデータを取得する
     });
@@ -43,9 +43,9 @@ class _BleTestState extends State<BleTest> {
           _name = name;
         });
       } else {
-        if (!mounted) return;
-        DialogHelper.showCustomDialog(
-            context: context, title: 'ログインしてください', message: '');
+        // if (!mounted) return;
+        // DialogHelper.showCustomDialog(
+        //     context: context, title: 'ログインしてください', message: '');
       }
     } catch (e) {
       setState(() {
@@ -189,9 +189,9 @@ class _BleTestState extends State<BleTest> {
     if (sendCharacteristic != null) {
       await writeToCharacteristic(sendCharacteristic, sendData);
     } else {
-      if (!mounted) return;
-      DialogHelper.showCustomDialog(
-          context: context, title: 'エラー', message: 'Characteristicの取得に失敗しました');
+      // if (!mounted) return;
+      // DialogHelper.showCustomDialog(
+      //     context: context, title: 'エラー', message: 'Characteristicの取得に失敗しました');
     }
   }
 
