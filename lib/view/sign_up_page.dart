@@ -1,3 +1,5 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -67,14 +69,20 @@ class _SignUpPageState extends State<SignUpPage> {
           .user;
       // ユーザー登録に成功したら Firestore にユーザー情報を保存
       if (user != null) {
-        await FirebaseHelper().saveUserInfo(user.uid, _name, _studentId);
+        String token = FirebaseMessaging.instance.getToken() as String;
+        await FirebaseHelper().saveUserInfo(
+          user.uid,
+          _name,
+          _studentId,
+          token,
+        );
         if (!mounted) return;
         func() async {
           final User? user = (await FirebaseAuth.instance
                   .signInWithEmailAndPassword(
                       email: _email, password: _password))
               .user;
-          // user_idを保存
+          // 端末にuser_idを保存
           SharedPreferences prefs = await SharedPreferences.getInstance();
           prefs.setString('user_id', user!.uid);
 

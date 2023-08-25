@@ -161,12 +161,12 @@ class FirebaseHelper {
 
   // Firestore にユーザー情報を保存する関数
   Future<void> saveUserInfo(
-      String userId, String name, String studentId) async {
+      String userId, String name, String studentId, String token) async {
     await _firestore.collection('users').doc(userId).set({
       'user_name': name,
       'student_id': studentId,
       'role': 0,
-      // TODO: 通知用トークンをここに保存
+      'token': token,
     });
   }
 }

@@ -60,7 +60,7 @@ class _TestLoginPage extends State<TestLoginPage> {
           .user;
       // ユーザー登録に成功したら Firestore にユーザー情報を保存
       if (user != null) {
-        await FirebaseHelper().saveUserInfo(user.uid, _name, _studentId);
+        await FirebaseHelper().saveUserInfo(user.uid, _name, _studentId, '');
         if (!mounted) return;
         DialogHelper.showCustomDialog(
             context: context, title: 'ユーザー登録しました', message: '');
