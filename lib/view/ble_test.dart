@@ -66,15 +66,35 @@ class _BleTestState extends State<BleTest> {
 
   // Bluetoothデバイスからサービスを見つけて返す関数
   Future<BluetoothService?> findService(device) async {
-    try {
-      // Bluetoothデバイスからサービスを探索して取得
-      // deviceがnullだったのが原因だった
-      final List<BluetoothService> services = await device.discoverServices();
+    // try {
+    //   // Bluetoothデバイスからサービスを探索して取得
+    //   // deviceがnullだったのが原因だった
+    //   final List<BluetoothService> services = await device.discoverServices();
 
-      // 指定したUUIDに一致するサービスを検索して返す
-      return services.firstWhere((service) {
-        return service.uuid.toString() == BluetoothConstants.serviceUuid;
-      });
+    //   // 指定したUUIDに一致するサービスを検索して返す
+    //   return services.firstWhere((service) {
+    //     return service.uuid.toString() == BluetoothConstants.serviceUuid;
+    //   });
+    // } catch (e) {
+    //   // サービスが見つからない場合にエラーメッセージを出力し、nullを返す
+    //   print('Error finding service: $e');
+    //   return null;
+    // }
+    try {
+      final List<BluetoothService> services = await device.discoverServices();
+      // Bluetoothデバイスからサービスを探索して取得
+      for (final uuid in BluetoothConstants.serviceUuids) {
+        // 指定したUUIDに一致するサービスを検索して返す
+        final matchingService = services.firstWhereOrNull(
+          (service) => service.uuid.toString() == uuid,
+        );
+
+        if (matchingService != null) {
+          return matchingService;
+        }
+      }
+
+      return null; // どのUUIDにも一致しなかった場合
     } catch (e) {
       // サービスが見つからない場合にエラーメッセージを出力し、nullを返す
       print('Error finding service: $e');
@@ -94,15 +114,16 @@ class _BleTestState extends State<BleTest> {
         for (ScanResult result in results) {
           if (!devices.contains(result.device)) {
             // 対応しているserviceが含まれているのかを確認する
-            final targetService = result.advertisementData.serviceUuids
-                .contains(BluetoothConstants.serviceUuid);
-
-            // 対応しているserviceが含まれていれば、デバイス一覧の配列に追加する。
-            // TODO: テスト用にコメントアウトしている。
-            // 自分の端末のみを対象にするため。
-            // if (targetService) {
-            devices.add(result.device);
-            // }
+            for (final uuid in BluetoothConstants.serviceUuids) {
+              final targetService =
+                  result.advertisementData.serviceUuids.contains(uuid);
+              // 対応しているserviceが含まれていれば、デバイス一覧の配列に追加する。
+              // TODO: テスト用にコメントアウトしている。
+              // 自分の端末のみを対象にするため。
+              if (targetService) {
+                devices.add(result.device);
+              }
+            }
           }
         }
       });
