@@ -1,12 +1,17 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:smart_handagote/logic/nav_bar.dart';
+import 'package:smart_handagote/view/home_page.dart';
+import 'package:smart_handagote/view/sign_in_page.dart';
 import 'package:smart_handagote/view/test_reservation_page.dart';
 
 import '../logic/firebase_helper.dart';
 import 'package:smart_handagote/constant.dart';
-import 'components/dialog.dart';
+import 'components/alertDialog.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -41,7 +46,7 @@ class _SignUpPageState extends State<SignUpPage> {
       // 学籍番号が被っていたら処理を終了
       if (!isStudentIdUnique) {
         if (!mounted) return;
-        DialogHelper.showCustomDialog(
+        AlertDialogHelper.showCustomDialog(
             context: context, title: '学籍番号が被っています', message: '学籍番号を確認してください');
         return;
       }
@@ -51,7 +56,7 @@ class _SignUpPageState extends State<SignUpPage> {
       // メールアドレスが被っていたら処理を終了
       if (!isEmailUnique) {
         if (!mounted) return;
-        DialogHelper.showCustomDialog(
+        AlertDialogHelper.showCustomDialog(
           context: context,
           title: 'メールアドレスが被っています',
           message: 'メールアドレスを確認してください',
@@ -66,26 +71,30 @@ class _SignUpPageState extends State<SignUpPage> {
           .user;
       // ユーザー登録に成功したら Firestore にユーザー情報を保存
       if (user != null) {
-        await FirebaseHelper().saveUserInfo(user.uid, _name, _studentId);
+        String token = await FirebaseMessaging.instance.getToken() as String;
+        await FirebaseHelper().saveUserInfo(
+          user.uid,
+          _name,
+          _studentId,
+          token,
+        );
         if (!mounted) return;
         func() async {
-          // TODO: ログイン処理
           final User? user = (await FirebaseAuth.instance
                   .signInWithEmailAndPassword(
                       email: _email, password: _password))
               .user;
-          // user_idを保存
+          // 端末にuser_idを保存
           SharedPreferences prefs = await SharedPreferences.getInstance();
           prefs.setString('user_id', user!.uid);
 
-          print('success');
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => const TestReservationPage()));
+          await Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => NavBar(
+                    userID: user!.uid,
+                  )));
         }
 
-        DialogHelper.showCustomDialog(
+        AlertDialogHelper.showCustomDialog(
             context: context,
             title: 'ユーザー登録しました',
             message: '',
@@ -93,8 +102,8 @@ class _SignUpPageState extends State<SignUpPage> {
       }
     } catch (e) {
       if (!mounted) return;
-      DialogHelper.showCustomDialog(
-          context: context, title: 'エラー', message: '');
+      AlertDialogHelper.showCustomDialog(
+          context: context, title: 'エラー', message: e.toString());
       print(e);
     } finally {
       setState(() {
@@ -149,14 +158,14 @@ class _SignUpPageState extends State<SignUpPage> {
                     Container(
                       width: MediaQuery.of(context).size.width * 0.8,
                       child: ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
                           _name = _nameController.text;
                           _studentId = _studentIdController.text;
                           _email = _emailController.text;
                           _password = _passwordController.text;
 
                           if (!_isLoadSigningIn) {
-                            registerUser();
+                            await registerUser();
                           }
                         },
                         style: ElevatedButton.styleFrom(
@@ -172,6 +181,22 @@ class _SignUpPageState extends State<SignUpPage> {
                                 style: TextStyle(color: Colors.white)),
                       ),
                     ),
+                    // ログインはこちら
+                    TextButton.icon(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const SignInPage()));
+                        },
+                        icon: const Icon(
+                          FontAwesomeIcons.angleLeft,
+                          color: Constant.white,
+                          size: 14,
+                        ),
+                        label: const Text('アカウントをお持ちのかたはこちら',
+                            style: TextStyle(
+                                color: Constant.white, fontSize: 14))),
                   ],
                 ),
               ),
@@ -189,7 +214,7 @@ class _SignUpPageState extends State<SignUpPage> {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          color: Constant.lightGray,
+          color: Constant.white,
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -199,9 +224,12 @@ class _SignUpPageState extends State<SignUpPage> {
             decoration: InputDecoration(
               suffixIcon: isObscure
                   ? IconButton(
-                      icon: Icon(_showPassword
-                          ? FontAwesomeIcons.solidEye
-                          : FontAwesomeIcons.solidEyeSlash),
+                      icon: Icon(
+                        _showPassword
+                            ? FontAwesomeIcons.solidEye
+                            : FontAwesomeIcons.solidEyeSlash,
+                        size: 18,
+                      ),
                       onPressed: () {
                         setState(() {
                           _showPassword = !_showPassword;

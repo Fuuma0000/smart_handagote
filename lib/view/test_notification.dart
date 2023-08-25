@@ -22,6 +22,7 @@ class TestNotificationPage extends StatefulWidget {
 }
 
 class _TestNotificationPageState extends State<TestNotificationPage> {
+  String token = '';
   Future<void> _setNotification() async {
     await flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<
@@ -31,7 +32,8 @@ class _TestNotificationPageState extends State<TestNotificationPage> {
     final messaging = FirebaseMessaging.instance;
     // FCMのトークンのIDを取得
     final fcmTocken = await messaging.getToken();
-    print(fcmTocken);
+    print('fcmToken: $fcmTocken');
+    token = fcmTocken!;
 
     // final FlutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
     flutterLocalNotificationsPlugin.initialize(
@@ -58,23 +60,28 @@ class _TestNotificationPageState extends State<TestNotificationPage> {
     _setNotification();
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print("フォアグラウンドでメッセージを受け取りました");
       RemoteNotification? notification = message.notification;
       AndroidNotification? android = message.notification?.android;
 
       if (notification != null && android != null) {
+        var androidChannelSpecifics = const AndroidNotificationDetails(
+          'CHANNEL_ID',
+          'CHANNEL_NAME',
+          channelDescription: "CHANNEL_DESCRIPTION",
+          importance: Importance.max,
+          priority: Priority.high,
+          playSound: false,
+          timeoutAfter: 5000,
+          styleInformation: DefaultStyleInformation(true, true),
+        );
         flutterLocalNotificationsPlugin.show(
-            notification.hashCode,
-            notification.title,
-            notification.body,
-            NotificationDetails(
-              android: AndroidNotificationDetails(
-                channel.id,
-                channel.name,
-                channelDescription: channel.description,
-                icon: 'launch_background',
-              ),
-            ));
+          notification.hashCode,
+          notification.title,
+          notification.body,
+          NotificationDetails(
+            android: androidChannelSpecifics,
+          ),
+        );
       }
     });
   }
@@ -88,7 +95,9 @@ class _TestNotificationPageState extends State<TestNotificationPage> {
           return Scaffold(
               body: Center(
             child: ElevatedButton(
-              onPressed: () async {},
+              onPressed: () async {
+                print(token);
+              },
               child: Text('notification'),
             ),
           ));

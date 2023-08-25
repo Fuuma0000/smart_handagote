@@ -2,18 +2,25 @@ import 'dart:developer';
 
 import 'package:animated_notch_bottom_bar/animated_notch_bottom_bar/animated_notch_bottom_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:smart_handagote/view/history_page.dart';
+import 'package:smart_handagote/view/home_page.dart';
+import 'package:smart_handagote/view/setting_page.dart';
 
 import '../constant.dart';
 import '../view/test_update_role_page.dart';
 
 class NavBar extends StatefulWidget {
-  const NavBar({Key? key}) : super(key: key);
+  String userID;
+
+  NavBar({super.key, required this.userID});
 
   @override
   State<NavBar> createState() => _NavBarState();
 }
 
 class _NavBarState extends State<NavBar> {
+  List<Widget> bottomBarPages = [];
+
   /// Controller to handle PageView and also handles initial page
   final _pageController = PageController(initialPage: 1);
 
@@ -28,22 +35,33 @@ class _NavBarState extends State<NavBar> {
     super.dispose();
   }
 
-  /// widget list
-  /// TODO: ここを使用したいクラスに変更する
-  final List<Widget> bottomBarPages = [
-    const Page1(),
-    const Page2(),
-    const Page3(),
-    // const UserManagementPage(),
-  ];
+  @override
+  void initState() {
+    super.initState();
+
+    /// widget list
+    bottomBarPages = [
+      HistoryPage(
+        myID: widget.userID,
+      ),
+      HomePage(myID: widget.userID),
+      SettingPage(
+        myID: widget.userID,
+      ),
+      // const UserManagementPage(),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Smart Handagote',
-          style: TextStyle(color: Constant.lightGray),
+        automaticallyImplyLeading: false,
+        title: const Center(
+          child: Text(
+            'KOTE Alert',
+            style: TextStyle(color: Constant.white),
+          ),
         ),
         backgroundColor: Constant.darkGray,
       ),
@@ -70,33 +88,33 @@ class _NavBarState extends State<NavBar> {
                 BottomBarItem(
                   inActiveItem: Icon(
                     Icons.history,
-                    color: Constant.lightGray,
+                    color: Constant.white,
                   ),
                   activeItem: Icon(
                     Icons.history,
-                    color: Constant.lightGray,
+                    color: Constant.yellow,
                   ),
                   itemLabel: 'Page 1',
                 ),
                 BottomBarItem(
                   inActiveItem: Icon(
                     Icons.home_filled,
-                    color: Constant.lightGray,
+                    color: Constant.white,
                   ),
                   activeItem: Icon(
                     Icons.home_filled,
-                    color: Constant.lightGray,
+                    color: Constant.yellow,
                   ),
                   itemLabel: 'Page 2',
                 ),
                 BottomBarItem(
                   inActiveItem: Icon(
                     Icons.settings,
-                    color: Constant.lightGray,
+                    color: Constant.white,
                   ),
                   activeItem: Icon(
                     Icons.settings,
-                    color: Constant.lightGray,
+                    color: Constant.yellow,
                   ),
                   itemLabel: 'Page 3',
                 ),

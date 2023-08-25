@@ -5,6 +5,7 @@ import { endUsing } from './functions/endUsing';
 import { startUsing } from './functions/startUsing';
 import { cancelReservation } from './functions/cancelReservation';
 import { alert } from './functions/alert';
+import { insertTestData } from './functions/test';
 
 admin.initializeApp();
 
@@ -17,5 +18,5 @@ exports.alert = alert;
 
 // テスト用
 // exports.userTest = userTest;
-// exports.insertTestData = insertTestData;
+exports.insertTestData = insertTestData;
 // exports.deleteTest = deleteTest;
