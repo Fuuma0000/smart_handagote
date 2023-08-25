@@ -6,7 +6,7 @@ import 'package:smart_handagote/logic/nav_bar.dart';
 import 'package:smart_handagote/view/sign_up_page.dart';
 
 import '../constant.dart';
-import 'components/dialog.dart';
+import 'components/alertDialog.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -51,7 +51,7 @@ class _SignInPageState extends State<SignInPage> {
                       )));
         }
 
-        DialogHelper.showCustomDialog(
+        AlertDialogHelper.showCustomDialog(
             context: context,
             title: 'ログインしました',
             message: '',
@@ -59,7 +59,7 @@ class _SignInPageState extends State<SignInPage> {
       }
     } catch (e) {
       if (!mounted) return;
-      DialogHelper.showCustomDialog(
+      AlertDialogHelper.showCustomDialog(
           context: context, title: 'エラー', message: '');
       print(e);
     } finally {

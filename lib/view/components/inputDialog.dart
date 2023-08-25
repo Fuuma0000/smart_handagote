@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:smart_handagote/constant.dart';
 
 import '../../logic/firebase_helper.dart';
-import 'dialog.dart';
+import 'alertDialog.dart';
 
 class InputDialog extends StatefulWidget {
   const InputDialog({Key? key, this.text}) : super(key: key);
@@ -41,7 +41,7 @@ class _InputDialogState extends State<InputDialog> {
       final User? user = FirebaseAuth.instance.currentUser;
       if (user == null) {
         // ダイアログを表示
-        DialogHelper.showCustomDialog(
+        AlertDialogHelper.showCustomDialog(
             context: context, title: 'ログインしていません', message: 'メッセージ');
         return;
       }
@@ -51,7 +51,7 @@ class _InputDialogState extends State<InputDialog> {
       if (userDoc['role'] != 2) {
         // ダイアログを表示
         if (!mounted) return;
-        DialogHelper.showCustomDialog(
+        AlertDialogHelper.showCustomDialog(
             context: context, title: '管理者権限がありません', message: '管理者に連絡してください');
         return;
       }
@@ -64,7 +64,7 @@ class _InputDialogState extends State<InputDialog> {
       if (querySnapshot.size == 0) {
         // ダイアログを表示
         if (!mounted) return;
-        DialogHelper.showCustomDialog(
+        AlertDialogHelper.showCustomDialog(
             context: context, title: '学籍番号が見つかりません', message: '学籍番号を確認してください');
         return;
       }
@@ -76,14 +76,14 @@ class _InputDialogState extends State<InputDialog> {
       await FirebaseHelper().updateRole(userId, newRole);
       // ダイアログを表示
       if (!mounted) return;
-      DialogHelper.showCustomDialog(
+      AlertDialogHelper.showCustomDialog(
           context: context,
           title: '権限を更新しました',
           message: _roleOptions[newRole]['label'] + ' に更新しました');
     } catch (e) {
       // ダイアログを表示
       if (!mounted) return;
-      DialogHelper.showCustomDialog(
+      AlertDialogHelper.showCustomDialog(
           context: context, title: 'エラー', message: '権限の更新に失敗しました');
       print('Error updating user role: $e');
     }

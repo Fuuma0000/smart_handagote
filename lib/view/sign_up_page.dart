@@ -9,7 +9,7 @@ import 'package:smart_handagote/view/test_reservation_page.dart';
 
 import '../logic/firebase_helper.dart';
 import 'package:smart_handagote/constant.dart';
-import 'components/dialog.dart';
+import 'components/alertDialog.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -44,7 +44,7 @@ class _SignUpPageState extends State<SignUpPage> {
       // 学籍番号が被っていたら処理を終了
       if (!isStudentIdUnique) {
         if (!mounted) return;
-        DialogHelper.showCustomDialog(
+        AlertDialogHelper.showCustomDialog(
             context: context, title: '学籍番号が被っています', message: '学籍番号を確認してください');
         return;
       }
@@ -54,7 +54,7 @@ class _SignUpPageState extends State<SignUpPage> {
       // メールアドレスが被っていたら処理を終了
       if (!isEmailUnique) {
         if (!mounted) return;
-        DialogHelper.showCustomDialog(
+        AlertDialogHelper.showCustomDialog(
           context: context,
           title: 'メールアドレスが被っています',
           message: 'メールアドレスを確認してください',
@@ -90,7 +90,7 @@ class _SignUpPageState extends State<SignUpPage> {
               builder: (context) => const TestReservationPage()));
         }
 
-        DialogHelper.showCustomDialog(
+        AlertDialogHelper.showCustomDialog(
             context: context,
             title: 'ユーザー登録しました',
             message: '',
@@ -98,7 +98,7 @@ class _SignUpPageState extends State<SignUpPage> {
       }
     } catch (e) {
       if (!mounted) return;
-      DialogHelper.showCustomDialog(
+      AlertDialogHelper.showCustomDialog(
           context: context, title: 'エラー', message: e.toString());
       print(e);
     } finally {

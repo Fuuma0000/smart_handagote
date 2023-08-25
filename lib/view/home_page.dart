@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_handagote/constant.dart';
 
 import '../logic/firebase_helper.dart';
-import 'components/dialog.dart';
+import 'components/alertDialog.dart';
 
 class HomePage extends StatefulWidget {
   String myID;
@@ -144,7 +144,7 @@ class _HomePageState extends State<HomePage> {
       message = '予約に失敗しました';
       print('Error making reservation: $e');
     } finally {
-      DialogHelper.showCustomDialog(
+      AlertDialogHelper.showCustomDialog(
           context: context, title: title, message: message);
       setState(() {
         _isLoadReserving = false;
@@ -157,7 +157,7 @@ class _HomePageState extends State<HomePage> {
     // 予約を削除
     await FirebaseHelper().cancelReservation(reservationId);
     if (!mounted) return;
-    DialogHelper.showCustomDialog(
+    AlertDialogHelper.showCustomDialog(
         context: context, title: '予約をキャンセルしました', message: '');
   }
 
@@ -166,7 +166,7 @@ class _HomePageState extends State<HomePage> {
     // 予約を削除
     await FirebaseHelper().cancelLog(logId);
     if (!mounted) return;
-    DialogHelper.showCustomDialog(
+    AlertDialogHelper.showCustomDialog(
         context: context, title: '予約をキャンセルしました', message: '');
   }
 

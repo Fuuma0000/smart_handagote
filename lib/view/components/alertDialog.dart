@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../constant.dart';
 
-class DialogHelper {
+class AlertDialogHelper {
   static Future<void> showCustomDialog(
       {required BuildContext context,
       required String title,

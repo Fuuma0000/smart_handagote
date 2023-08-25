@@ -1,7 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:smart_handagote/constant.dart';
+import 'package:smart_handagote/view/components/checkDialog.dart';
 import 'package:smart_handagote/view/components/inputDialog.dart';
+import 'package:smart_handagote/view/sign_in_page.dart';
 import 'package:smart_handagote/view/test_notification.dart';
 
 import 'add_device_page.dart';
@@ -55,7 +58,19 @@ class _SettingPageState extends State<SettingPage> {
           _settingBtnWidget(
               'ログアウト', FontAwesomeIcons.arrowRightFromBracket, Constant.pink,
               () {
-            // TODO: ログアウト
+            //        AlertDialogHelper.showCustomDialog(
+            // context: context, title: title, message: message);
+            CheckDialogHelper.showCustomDialog(
+                context: context,
+                title: 'ログアウトしますか？',
+                message: '',
+                onPressed: () {
+                  FirebaseAuth.instance.signOut();
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const SignInPage()));
+                });
           }),
         ],
       ),
