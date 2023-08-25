@@ -64,7 +64,24 @@ class _HistoryPageState extends State<HistoryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Constant.black,
-      body: _missingLogWidget(),
+      body: Column(
+        children: [
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 20),
+            padding: const EdgeInsets.symmetric(vertical: 3),
+            decoration: const BoxDecoration(
+              border: Border(
+                bottom: BorderSide(color: Colors.white),
+              ),
+            ),
+            child: Text(
+              '切り忘れ履歴',
+              style: const TextStyle(fontSize: 20, color: Constant.white),
+            ),
+          ),
+          _missingLogWidget(),
+        ],
+      ),
     );
   }
 
@@ -105,8 +122,8 @@ class _HistoryPageState extends State<HistoryPage> {
 
   Widget _buildMissingLogList(List<Map<String, dynamic>> logs) {
     return Container(
-      padding: EdgeInsets.only(top: 20),
-      height: MediaQuery.of(context).size.height * 0.8,
+      padding: const EdgeInsets.only(top: 20),
+      height: MediaQuery.of(context).size.height * 0.78,
       child: ListView.builder(
         itemCount: logs.length,
         itemBuilder: (context, index) {
@@ -133,9 +150,9 @@ class _HistoryPageState extends State<HistoryPage> {
           return Row(
             children: [
               Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   margin:
+                      const EdgeInsets.only(left: 20, right: 20, bottom: 20),
+                  padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   decoration: BoxDecoration(
                     color: indexColor,
@@ -146,7 +163,7 @@ class _HistoryPageState extends State<HistoryPage> {
                           color: Constant.white, fontSize: 20))),
               Container(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      const EdgeInsets.only(left: 20, right: 20, bottom: 20),
                   child: Text(
                     logs[index]['userName'],
                     style: const TextStyle(color: Constant.white, fontSize: 20),
