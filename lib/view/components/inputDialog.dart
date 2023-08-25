@@ -17,15 +17,10 @@ class InputDialog extends StatefulWidget {
 class _InputDialogState extends State<InputDialog> {
   final controller = TextEditingController();
   final focusNode = FocusNode();
-  @override
-  void dispose() {
-    controller.dispose();
-    focusNode.dispose();
-    super.dispose();
-  }
-
   String _studentId = '';
   int _role = 0; // 初期値を設定
+
+  Color _textColor = Constant.white;
 
   // 権限の選択肢
   final List<Map<String, dynamic>> _roleOptions = [
@@ -33,6 +28,13 @@ class _InputDialogState extends State<InputDialog> {
     {'value': 1, 'label': '研修終了'},
     {'value': 2, 'label': '管理者'},
   ];
+
+  @override
+  void dispose() {
+    controller.dispose();
+    focusNode.dispose();
+    super.dispose();
+  }
 
   // ユーザーの role を更新する関数
   Future<void> updateUserRoleByStudentId(String studentId, int newRole) async {
@@ -92,23 +94,22 @@ class _InputDialogState extends State<InputDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      // backgroundColor: Colors.transparent,
-      backgroundColor: Constant.lightGrey,
-      surfaceTintColor: Constant.darkGray,
-      // elevation: 1,
+      backgroundColor: Constant.black,
+      surfaceTintColor: Constant.black,
       content: SizedBox(
         width: MediaQuery.of(context).size.width * 0.8,
         height: MediaQuery.of(context).size.height * 0.3,
         child: Column(
           children: [
-            const Center(
+            Center(
               child: Padding(
-                padding: EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(8.0),
                 child: Text(
                   'ユーザー承認',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w500,
+                    color: _textColor,
                   ),
                 ),
               ),
@@ -121,39 +122,61 @@ class _InputDialogState extends State<InputDialog> {
                 controller: controller,
                 decoration: InputDecoration(
                   labelText: '学籍番号',
-                  // border
+                  labelStyle: TextStyle(
+                    color: _textColor,
+                    fontSize: 18,
+                  ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(
-                      color: Constant.darkGray,
+                      color: _textColor,
+                      width: 2,
                     ),
                   ),
                 ),
+                onChanged: (String value) {
+                  setState(() {
+                    _studentId = value;
+                  });
+                },
                 onFieldSubmitted: (_) {
                   // TODO: エンターを押した時
                 },
               ),
             ),
-            DropdownButtonFormField<int>(
-              decoration: const InputDecoration(
-                labelText: '権限',
-                labelStyle: TextStyle(color: Colors.white),
+            Container(
+              width: MediaQuery.of(context).size.width * 0.8,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: Theme(
+                data: Theme.of(context).copyWith(
+                  canvasColor: Constant.black, // 背景色を変更
+                ),
+                child: DropdownButtonFormField<int>(
+                  decoration: InputDecoration(
+                    labelText: '権限',
+                    labelStyle: TextStyle(
+                      color: _textColor,
+                      fontSize: 20,
+                    ),
+                  ),
+                  style: TextStyle(color: _textColor, fontSize: 18),
+                  value: _role,
+                  items: _roleOptions.map((option) {
+                    return DropdownMenuItem<int>(
+                      value: option['value'],
+                      child: Text(option['label'],
+                          style: TextStyle(color: _textColor)),
+                    );
+                  }).toList(),
+                  onChanged: (int? value) {
+                    setState(() {
+                      if (value != null) {
+                        _role = value;
+                      }
+                    });
+                  },
+                ),
               ),
-              style: const TextStyle(color: Colors.white),
-              value: _role,
-              items: _roleOptions.map((option) {
-                return DropdownMenuItem<int>(
-                  value: option['value'],
-                  child: Text(option['label']),
-                );
-              }).toList(),
-              onChanged: (int? value) {
-                setState(() {
-                  if (value != null) {
-                    _role = value;
-                  }
-                });
-              },
             ),
           ],
         ),
@@ -165,12 +188,11 @@ class _InputDialogState extends State<InputDialog> {
             style: TextButton.styleFrom(
               backgroundColor: Constant.green,
             ),
-            onPressed: () {
-              // TODO: 認証処理
-              print(controller.text);
-              updateUserRoleByStudentId(_studentId, _role);
+            onPressed: () async {
+              // 認証処理
+              await updateUserRoleByStudentId(_studentId, _role);
             },
-            child: Text(
+            child: const Text(
               '完了',
               style: TextStyle(
                 fontSize: 16,

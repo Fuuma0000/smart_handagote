@@ -45,7 +45,9 @@ class _NavBarState extends State<NavBar> {
         myID: widget.userID,
       ),
       HomePage(myID: widget.userID),
-      const SettingPage(),
+      SettingPage(
+        myID: widget.userID,
+      ),
       // const UserManagementPage(),
     ];
   }

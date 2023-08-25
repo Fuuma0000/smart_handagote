@@ -6,11 +6,13 @@ import 'package:smart_handagote/view/components/checkDialog.dart';
 import 'package:smart_handagote/view/components/inputDialog.dart';
 import 'package:smart_handagote/view/sign_in_page.dart';
 import 'package:smart_handagote/view/test_notification.dart';
+import 'package:smart_handagote/view/user_edit_page.dart';
 
 import 'add_device_page.dart';
 
 class SettingPage extends StatefulWidget {
-  const SettingPage({super.key});
+  String myID;
+  SettingPage({super.key, required this.myID});
 
   @override
   State<SettingPage> createState() => _SettingPageState();
@@ -55,11 +57,10 @@ class _SettingPageState extends State<SettingPage> {
               });
             },
           ),
+          // ログアウト
           _settingBtnWidget(
               'ログアウト', FontAwesomeIcons.arrowRightFromBracket, Constant.pink,
               () {
-            //        AlertDialogHelper.showCustomDialog(
-            // context: context, title: title, message: message);
             CheckDialogHelper.showCustomDialog(
                 context: context,
                 title: 'ログアウトしますか？',
@@ -81,6 +82,12 @@ class _SettingPageState extends State<SettingPage> {
     return InkWell(
       onTap: () {
         // TODO: ユーザー設定
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => (UserEditPage(
+                      userId: widget.myID,
+                    ))));
       },
       highlightColor: Colors.transparent,
       splashColor: Colors.transparent,
