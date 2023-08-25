@@ -29,11 +29,15 @@ export const checkNextReservation = async (device_id: string) => {
   await logsCollection.add(logData);
   functions.logger.info('次の人を追加しました');
 
+  // device_idからdevice_nameを取得
+  const deviceDoc = await admin.firestore().collection('devices').doc(device_id).get();
+  const deviceName = deviceDoc.data()!.device_name;
+
   // 通知を送信
   const userDoc = await admin.firestore().collection('users').doc(nextReservationData.user_id).get();
   const userToken = userDoc.data()!.token;
   const messageTitle = '予約の順番が来ました';
-  const messageBody = `デバイスID: ${device_id} が使用可能です`;
+  const messageBody = `デバイス: ${deviceName} が使用可能です`;
 
   await sendNotification(userToken, messageTitle, messageBody);
 
