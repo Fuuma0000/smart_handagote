@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:smart_handagote/constant.dart';
 import 'package:smart_handagote/view/components/inputDialog.dart';
+import 'package:smart_handagote/view/test_notification.dart';
 
 import 'add_device_page.dart';
 
