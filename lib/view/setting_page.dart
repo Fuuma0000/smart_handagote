@@ -2,17 +2,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:smart_handagote/constant.dart';
+import 'package:smart_handagote/view/add_fingerprint_page.dart';
 import 'package:smart_handagote/view/components/checkDialog.dart';
 import 'package:smart_handagote/view/components/inputDialog.dart';
 import 'package:smart_handagote/view/sign_in_page.dart';
-import 'package:smart_handagote/view/test_notification.dart';
 import 'package:smart_handagote/view/user_edit_page.dart';
 
-import 'add_device_page.dart';
-
 class SettingPage extends StatefulWidget {
-  String myID;
-  SettingPage({super.key, required this.myID});
+  final String myID;
+  const SettingPage({super.key, required this.myID});
 
   @override
   State<SettingPage> createState() => _SettingPageState();
@@ -34,23 +32,25 @@ class _SettingPageState extends State<SettingPage> {
             FontAwesomeIcons.fingerprint,
             Constant.grey,
             () {
-              // TODO: 指紋追加
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const AddFingerprintPage()));
             },
           ),
-          _settingBtnWidget(
-            'はんだごて追加',
-            FontAwesomeIcons.circlePlus,
-            Constant.grey,
-            () async {
-              // TODO: はんだごて追加
-            },
-          ),
+          // _settingBtnWidget(
+          //   'はんだごて追加',
+          //   FontAwesomeIcons.circlePlus,
+          //   Constant.grey,
+          //   () async {
+          //     // TODO: はんだごて追加
+          //   },
+          // ),
           _settingBtnWidget(
             'ユーザー承認',
             FontAwesomeIcons.check,
             Constant.grey,
             () async {
-              // TODO: ユーザー承認
               final result = await DialogUtils.showEditingDialog(context, name);
               setState(() {
                 name = result ?? name;
@@ -81,7 +81,6 @@ class _SettingPageState extends State<SettingPage> {
   Widget _userSettingBtnWidget() {
     return InkWell(
       onTap: () {
-        // TODO: ユーザー設定
         Navigator.push(
             context,
             MaterialPageRoute(
@@ -101,7 +100,7 @@ class _SettingPageState extends State<SettingPage> {
         child: const Row(
           children: [
             Icon(FontAwesomeIcons.solidUser),
-            Spacer(),
+            Spacer(flex: 1),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -109,10 +108,10 @@ class _SettingPageState extends State<SettingPage> {
                     style:
                         TextStyle(fontSize: 20, fontWeight: FontWeight.w500)),
                 SizedBox(height: 4),
-                Text('名前・メールアドレス・パスワード・学籍番号', style: TextStyle(fontSize: 12)),
+                Text('名前・学籍番号', style: TextStyle(fontSize: 12)),
               ],
             ),
-            Spacer(),
+            Spacer(flex: 4),
             Icon(FontAwesomeIcons.angleRight),
           ],
         ),
