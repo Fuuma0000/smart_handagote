@@ -315,12 +315,14 @@ class _HomePageState extends State<HomePage> {
                   d['userName'] = log['userName'];
                   d['deviceName'] = log['deviceName'];
                   d['startTime'] = log['startTime'];
-                  if (log['startTime'] == null) {
-                    d['state'] = '使用前';
-                  } else if (log['isTurnOff']) {
+                  if (log['isTurnOff']) {
                     d['state'] = '切り忘れ';
-                  } else {
+                  } else if (log['startTime'] == null) {
+                    d['state'] = '使用前';
+                  } else if (log['endTime'] == null) {
                     d['state'] = '使用中';
+                  } else {
+                    d['state'] = '空き';
                   }
                 }
               }
@@ -485,6 +487,9 @@ class _HomePageState extends State<HomePage> {
   Widget _reservationWidget(Map<String, dynamic> reservation, int index) {
     bool isMyReservation = (reservation['userId'] == widget.myID);
     Color indexColor = isMyReservation ? Constant.orange : Constant.lightGrey;
+
+    print(
+        'username: ${reservation['userName']}, state: ${reservation['state']}');
 
     return Container(
       width: MediaQuery.of(context).size.width * 0.8,
