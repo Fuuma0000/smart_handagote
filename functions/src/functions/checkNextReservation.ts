@@ -16,17 +16,7 @@ export const checkNextReservation = async (device_id: string) => {
   }
   // 一番古い予約を削除
   const nextReservationData = reservationDoc.docs[0].data();
-  // const device_id = (await logRef.get()).data()!.device_id;
-
-  // すでにlogsコレクションに追加されているか確認
-  const logDoc = await logsCollection.where('user_id', '==', nextReservationData.user_id).where('start_time', '==', null).get();
-  if (!logDoc.empty) {
-    // res.status(200).send('success: already added');
-    return {
-      status: 200,
-      message: 'success: already added',
-    };
-  }
+  await reservationDoc.docs[0].ref.delete();
 
   // 次の順番の人をlogsコレクションに追加
   const logData = {
