@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:smart_handagote/logic/nav_bar.dart';
+import 'package:smart_handagote/view/home_page.dart';
 import 'package:smart_handagote/view/sign_in_page.dart';
 import 'package:smart_handagote/view/test_reservation_page.dart';
 
@@ -69,7 +71,7 @@ class _SignUpPageState extends State<SignUpPage> {
           .user;
       // ユーザー登録に成功したら Firestore にユーザー情報を保存
       if (user != null) {
-        String token = FirebaseMessaging.instance.getToken() as String;
+        String token = await FirebaseMessaging.instance.getToken() as String;
         await FirebaseHelper().saveUserInfo(
           user.uid,
           _name,
@@ -87,7 +89,9 @@ class _SignUpPageState extends State<SignUpPage> {
           prefs.setString('user_id', user!.uid);
 
           await Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => const TestReservationPage()));
+              builder: (context) => NavBar(
+                    userID: user!.uid,
+                  )));
         }
 
         AlertDialogHelper.showCustomDialog(

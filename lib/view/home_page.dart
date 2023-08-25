@@ -505,7 +505,11 @@ class _HomePageState extends State<HomePage> {
             ),
             child: Text(
               index.toString(),
-              style: const TextStyle(color: Constant.white, fontSize: 18),
+              style: const TextStyle(
+                color: Constant.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
           const SizedBox(width: 20),

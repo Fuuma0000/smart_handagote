@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -6,6 +7,7 @@ import 'package:smart_handagote/logic/nav_bar.dart';
 import 'package:smart_handagote/view/sign_up_page.dart';
 
 import '../constant.dart';
+import '../logic/firebase_helper.dart';
 import 'components/alertDialog.dart';
 
 class SignInPage extends StatefulWidget {
@@ -37,6 +39,10 @@ class _SignInPageState extends State<SignInPage> {
       if (user != null) {
         if (!mounted) return;
         onPressed() async {
+          // トークンをfirebaseに保存
+          String token = await FirebaseMessaging.instance.getToken() as String;
+          await FirebaseHelper().updateToken(user.uid, token);
+
           // 端末にuser_idを保存
           SharedPreferences sharedPreferences =
               await SharedPreferences.getInstance();

@@ -169,4 +169,9 @@ class FirebaseHelper {
       'token': token,
     });
   }
+
+  // Firestoreにトークンをupdateする関数
+  Future<void> updateToken(String userId, String token) async {
+    await _firestore.collection('users').doc(userId).update({'token': token});
+  }
 }
