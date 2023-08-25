@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:smart_handagote/logic/firebase_helper.dart';
 
 import '../constant.dart';
-import 'components/dialog.dart';
+import 'components/alertDialog.dart';
 
 class TestReservationPage extends StatefulWidget {
   const TestReservationPage({Key? key}) : super(key: key);
@@ -112,7 +112,7 @@ class _TestReservationPageState extends State<TestReservationPage> {
       message = '予約に失敗しました';
       print('Error making reservation: $e');
     } finally {
-      DialogHelper.showCustomDialog(
+      AlertDialogHelper.showCustomDialog(
           context: context, title: title, message: message);
       setState(() {
         _isLoadReserving = false;
@@ -125,7 +125,7 @@ class _TestReservationPageState extends State<TestReservationPage> {
     // 予約を削除
     await FirebaseHelper().cancelLog(logId);
     if (!mounted) return;
-    DialogHelper.showCustomDialog(
+    AlertDialogHelper.showCustomDialog(
         context: context, title: '予約をキャンセルしました', message: '');
   }
 
@@ -154,7 +154,7 @@ class _TestReservationPageState extends State<TestReservationPage> {
             'userName': userName,
             'deviceName': deviceName,
             'startTime': doc['start_time'],
-            'isTunrOff': doc['is_turn_off'],
+            'isTurnOff': doc['is_turn_off'],
           });
         }
       }
@@ -171,7 +171,7 @@ class _TestReservationPageState extends State<TestReservationPage> {
           // Firestoreから取得したタイムスタンプを変換
           final dynamic startTime = logs[index]['startTime'];
           String statusMessage = startTime != null
-              ? (logs[index]['isTunrOff'] ? '切り忘れ' : '使用中')
+              ? (logs[index]['isTurnOff'] ? '切り忘れ' : '使用中')
               : '開始前';
           String timeText = '開始時間: ';
 
@@ -220,7 +220,7 @@ class _TestReservationPageState extends State<TestReservationPage> {
     // 予約を削除
     await FirebaseHelper().cancelReservation(reservationId);
     if (!mounted) return;
-    DialogHelper.showCustomDialog(
+    AlertDialogHelper.showCustomDialog(
         context: context, title: '予約をキャンセルしました', message: '');
   }
 
@@ -238,7 +238,7 @@ class _TestReservationPageState extends State<TestReservationPage> {
       if (userName != '') {
         reservations.add({
           'reservationId': doc.id,
-          'timestamp': doc['timestamp'],
+          'reservation_time': doc['reservation_time'],
           'userName': userName,
         });
       }
@@ -246,7 +246,8 @@ class _TestReservationPageState extends State<TestReservationPage> {
 
     // 予約一覧をタイムスタンプで昇順にソート
     // TODO:_TypeError (type 'Null' is not a subtype of type 'Timestamp' of 'other')になる発生条件が不明
-    reservations.sort((a, b) => a['timestamp'].compareTo(b['timestamp']));
+    reservations
+        .sort((a, b) => a['reservation_time'].compareTo(b['reservation_time']));
     return reservations;
   }
 
@@ -257,7 +258,7 @@ class _TestReservationPageState extends State<TestReservationPage> {
         itemCount: reservations.length,
         itemBuilder: (BuildContext context, int index) {
           // Firestoreから取得したタイムスタンプを変換
-          final dynamic timestamp = reservations[index]['timestamp'];
+          final dynamic timestamp = reservations[index]['reservation_time'];
 
           // タイムスタンプがnullの場合はエラーメッセージを表示
           if (timestamp == null || timestamp is! Timestamp) {
@@ -276,7 +277,8 @@ class _TestReservationPageState extends State<TestReservationPage> {
             );
           }
           // タイムスタンプをDateTimeに変換
-          DateTime reservationTime = reservations[index]['timestamp'].toDate();
+          DateTime reservationTime =
+              reservations[index]['reservation_time'].toDate();
 
           // 予約時間を指定のフォーマットで表示
           String formattedTime =

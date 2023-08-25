@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../logic/firebase_helper.dart';
-import 'components/dialog.dart';
+import 'components/alertDialog.dart';
 
 class TestLoginPage extends StatefulWidget {
   const TestLoginPage({Key? key}) : super(key: key);
@@ -36,7 +36,7 @@ class _TestLoginPage extends State<TestLoginPage> {
       // 学籍番号が被っていたら処理を終了
       if (!isStudentIdUnique) {
         if (!mounted) return;
-        DialogHelper.showCustomDialog(
+        AlertDialogHelper.showCustomDialog(
             context: context, title: '学籍番号が被っています', message: '学籍番号を確認してください');
         return;
       }
@@ -46,7 +46,7 @@ class _TestLoginPage extends State<TestLoginPage> {
       // メールアドレスが被っていたら処理を終了
       if (!isEmailUnique) {
         if (!mounted) return;
-        DialogHelper.showCustomDialog(
+        AlertDialogHelper.showCustomDialog(
             context: context,
             title: 'メールアドレスが被っています',
             message: 'メールアドレスを確認してください');
@@ -60,14 +60,14 @@ class _TestLoginPage extends State<TestLoginPage> {
           .user;
       // ユーザー登録に成功したら Firestore にユーザー情報を保存
       if (user != null) {
-        await FirebaseHelper().saveUserInfo(user.uid, _name, _studentId);
+        await FirebaseHelper().saveUserInfo(user.uid, _name, _studentId, '');
         if (!mounted) return;
-        DialogHelper.showCustomDialog(
+        AlertDialogHelper.showCustomDialog(
             context: context, title: 'ユーザー登録しました', message: '');
       }
     } catch (e) {
       if (!mounted) return;
-      DialogHelper.showCustomDialog(
+      AlertDialogHelper.showCustomDialog(
           context: context, title: 'エラー', message: '');
       print(e);
     } finally {
@@ -90,12 +90,12 @@ class _TestLoginPage extends State<TestLoginPage> {
       // ログインに成功したらダイアログを表示
       if (user != null) {
         if (!mounted) return;
-        DialogHelper.showCustomDialog(
+        AlertDialogHelper.showCustomDialog(
             context: context, title: 'ログインしました', message: '');
       }
     } catch (e) {
       if (!mounted) return;
-      DialogHelper.showCustomDialog(
+      AlertDialogHelper.showCustomDialog(
           context: context, title: 'エラー', message: '');
       print(e);
     } finally {

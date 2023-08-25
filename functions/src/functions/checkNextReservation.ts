@@ -1,5 +1,6 @@
 import * as admin from 'firebase-admin';
 import { sendNotification } from './notification';
+import * as functions from 'firebase-functions';
 
 export const checkNextReservation = async (device_id: string) => {
   const logsCollection = await admin.firestore().collection('logs');
@@ -15,7 +16,7 @@ export const checkNextReservation = async (device_id: string) => {
   }
   // 一番古い予約を削除
   const nextReservationData = reservationDoc.docs[0].data();
-  // const device_id = (await logRef.get()).data()!.device_id;
+  await reservationDoc.docs[0].ref.delete();
 
   // 次の順番の人をlogsコレクションに追加
   const logData = {
@@ -26,12 +27,17 @@ export const checkNextReservation = async (device_id: string) => {
     is_turn_off: false,
   };
   await logsCollection.add(logData);
+  functions.logger.info('次の人を追加しました');
+
+  // device_idからdevice_nameを取得
+  const deviceDoc = await admin.firestore().collection('devices').doc(device_id).get();
+  const deviceName = deviceDoc.data()!.device_name;
 
   // 通知を送信
   const userDoc = await admin.firestore().collection('users').doc(nextReservationData.user_id).get();
   const userToken = userDoc.data()!.token;
   const messageTitle = '予約の順番が来ました';
-  const messageBody = `デバイスID: ${device_id} が使用可能です`;
+  const messageBody = `デバイス: ${deviceName} が使用可能です`;
 
   await sendNotification(userToken, messageTitle, messageBody);
 

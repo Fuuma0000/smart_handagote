@@ -35,7 +35,7 @@ class FirebaseHelper {
   Future<void> addReservationEntry(String userId) async {
     await _firestore.collection('reservations').add({
       'user_id': userId,
-      'timestamp': FieldValue.serverTimestamp(),
+      'reservation_time': FieldValue.serverTimestamp(),
     });
   }
 
@@ -57,6 +57,17 @@ class FirebaseHelper {
       return deviceDoc['device_name'];
     }
     return '';
+  }
+
+  // デバイス全てを取得する関数
+  Future<Map<String, String>> getAllDevices() async {
+    Map<String, String> devices = {};
+    QuerySnapshot devicesQuerySnapshot =
+        await FirebaseFirestore.instance.collection('devices').get();
+    devicesQuerySnapshot.docs.forEach((deviceDoc) {
+      devices[deviceDoc.id] = deviceDoc['device_name'];
+    });
+    return devices;
   }
 
   // reservationsのコレクションにuser_idが一致するドキュメントがあるか検索する関数
@@ -148,14 +159,39 @@ class FirebaseHelper {
     return true;
   }
 
+  // 学籍番号が自分以外と被らないかチェックする関数
+  Future<bool> isStudentIdUniqueExceptMe(
+      String studentId, String userId) async {
+    QuerySnapshot querySnapshot = await _firestore
+        .collection('users')
+        .where('student_id', isEqualTo: studentId)
+        // .where('user_id', isNotEqualTo: userId)
+        .where(FieldPath.documentId, isNotEqualTo: userId)
+        .get();
+    return querySnapshot.size <= 0;
+  }
+
   // Firestore にユーザー情報を保存する関数
   Future<void> saveUserInfo(
-      String userId, String name, String studentId) async {
+      String userId, String name, String studentId, String token) async {
     await _firestore.collection('users').doc(userId).set({
       'user_name': name,
       'student_id': studentId,
       'role': 0,
-      // TODO: 通知用トークンをここに保存
+      'token': token,
     });
+  }
+
+  // Firestoreにトークンをupdateする関数
+  Future<void> updateToken(String userId, String token) async {
+    await _firestore.collection('users').doc(userId).update({'token': token});
+  }
+
+  // 学籍番号と名前を更新する関数
+  Future<void> updateUser(String userId, String name, String studentId) async {
+    await _firestore
+        .collection('users')
+        .doc(userId)
+        .update({'user_name': name, 'student_id': studentId});
   }
 }
