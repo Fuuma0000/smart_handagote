@@ -297,14 +297,14 @@ class _HomePageState extends State<HomePage> {
                 'userName': '',
                 'deviceName': 'No.1',
                 'startTime': null,
-                'state': '未使用',
+                'state': '空き',
               },
               {
                 'deviceId': devices[1],
                 'userName': '',
                 'deviceName': 'No.2',
                 'startTime': null,
-                'state': '未使用',
+                'state': '空き',
               }
             ];
             // はんだごて1・2の使用状況
@@ -350,11 +350,11 @@ class _HomePageState extends State<HomePage> {
     // borderColorをlog['state']によって変更
     Color borderColor;
     if (log['state'] == '使用前') {
-      borderColor = Constant.pink;
+      borderColor = Constant.lightGreen;
     } else if (log['state'] == '使用中') {
       borderColor = Constant.orange;
     } else if (log['state'] == '切り忘れ') {
-      borderColor = Constant.yellow;
+      borderColor = Constant.lightPink;
     } else {
       borderColor = Constant.green;
     }

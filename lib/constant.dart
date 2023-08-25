@@ -9,7 +9,9 @@ class Constant {
   static const Color lightGrey = Color(0xFF616161);
   static Color grey = const Color(0xffb5b5b5).withAlpha(240);
   static const Color green = Color(0xFF268785);
+  static const Color lightGreen = Color(0xFF50BA6E);
   static const Color orange = Color(0xFFD17C3E);
   static const Color yellow = Color(0xFFF2C162);
   static const Color pink = Color(0xFFAC3653);
+  static const Color lightPink = Color(0xFFD13E3E);
 }
