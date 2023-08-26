@@ -108,8 +108,8 @@ export const initLogs = functions.https.onRequest(async (req, res) => {
     reservations.forEach(async (reservation) => {
       await reservation.ref.delete();
     });
-    // logsのデータisTurnOff = falseのみを削除
-    const logs = await logsRef.where('is_turn_off', '==', false).get();
+    // logsのデータisTurnOff = falseのみ、日付が今日のものを削除
+    const logs = await logsRef.where('is_turn_off', '==', false).where('start_time', '<', Timestamp.fromDate(new Date())).get();
     logs.forEach(async (log) => {
       await log.ref.delete();
     });
