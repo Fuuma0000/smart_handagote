@@ -28,7 +28,13 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _reservationsStream = _firestore.collection('reservations').snapshots();
-    _logsStream = _firestore.collection('logs').snapshots();
+    _logsStream = _firestore
+        .collection('logs')
+        .where(
+          'end_time',
+          isNull: true,
+        )
+        .snapshots();
   }
 
   // 使用前か確認する関数
