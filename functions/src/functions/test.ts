@@ -108,8 +108,8 @@ export const initLogs = functions.https.onRequest(async (req, res) => {
     reservations.forEach(async (reservation) => {
       await reservation.ref.delete();
     });
-    // logsのデータを削除
-    const logs = await logsRef.get();
+    // logsのデータisTurnOff = falseのみを削除
+    const logs = await logsRef.where('is_turn_off', '==', false).get();
     logs.forEach(async (log) => {
       await log.ref.delete();
     });
