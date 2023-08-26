@@ -22,7 +22,10 @@ class _HomePageState extends State<HomePage> {
   late Stream<QuerySnapshot> _reservationsStream;
   late Stream<QuerySnapshot> _logsStream;
   bool _isLoadReserving = false; // 予約中かどうかを管理するフラグ
-  List<String> devices = ['F8tskdHqB19OUUA8cgVI', 'GmnzaeS39Go77Uto1aFu'];
+  List<String> devices = [
+    '7c68efdd-a727-4b51-ba18-a3519164875c',
+    '87adfa87-751f-4c68-b078-ad2856833945'
+  ];
 
   @override
   void initState() {

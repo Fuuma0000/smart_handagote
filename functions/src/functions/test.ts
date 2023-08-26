@@ -97,8 +97,35 @@ export const userTest = functions.https.onRequest(async (req, res) => {
   }
 });
 
+// logsの初期化
+export const initLogs = functions.https.onRequest(async (req, res) => {
+  const logsRef = admin.firestore().collection('logs');
+  const reservationsRef = admin.firestore().collection('reservations');
+
+  try {
+    // reservationsのデータを削除
+    const reservations = await reservationsRef.get();
+    reservations.forEach(async (reservation) => {
+      await reservation.ref.delete();
+    });
+    // logsのデータisTurnOff = falseのみ、日付が今日のものを削除
+    const logs = await logsRef.where('is_turn_off', '==', false).where('start_time', '<', Timestamp.fromDate(new Date())).get();
+    logs.forEach(async (log) => {
+      await log.ref.delete();
+    });
+    // 成功
+    res.status(200).send('OK');
+    return;
+  } catch (error) {
+    functions.logger.error('Error', error);
+    res.status(500).send('Internal Server Error');
+    return;
+  }
+});
+
 exports = module.exports = {
   insertTestData,
   deleteTest,
   userTest,
+  initLogs,
 };

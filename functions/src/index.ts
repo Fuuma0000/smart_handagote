@@ -1,11 +1,10 @@
 import * as admin from 'firebase-admin';
-// import { deleteTest, insertTestData, userTest } from './functions/test';
 import { checkNextReservation } from './functions/checkNextReservation';
 import { endUsing } from './functions/endUsing';
 import { startUsing } from './functions/startUsing';
 import { cancelReservation } from './functions/cancelReservation';
 import { alert } from './functions/alert';
-import { insertTestData } from './functions/test';
+import { initLogs, insertTestData } from './functions/test';
 
 admin.initializeApp();
 
@@ -17,6 +16,7 @@ exports.cancelReservation = cancelReservation;
 exports.alert = alert;
 
 // テスト用
-// exports.userTest = userTest;
 exports.insertTestData = insertTestData;
+// exports.userTest = userTest;
 // exports.deleteTest = deleteTest;
+exports.initLogs = initLogs;
