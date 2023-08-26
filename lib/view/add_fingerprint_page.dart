@@ -5,6 +5,7 @@ import 'package:smart_handagote/bluetooth_constants.dart';
 import 'package:smart_handagote/constant.dart';
 import 'package:smart_handagote/logic/firebase_helper.dart';
 import 'package:collection/collection.dart';
+import 'package:smart_handagote/view/components/alertDialog.dart';
 
 class AddFingerprintPage extends StatefulWidget {
   const AddFingerprintPage({super.key});
@@ -16,6 +17,8 @@ class AddFingerprintPage extends StatefulWidget {
 class _AddFingerprintPageState extends State<AddFingerprintPage> {
   FlutterBluePlus flutterBluePlus = FlutterBluePlus.instance;
   List<BluetoothDevice> devices = [];
+  List<String> settedUUID = [];
+  Map<String, String> fetchDevices = {};
   final TextEditingController controller = TextEditingController();
   BluetoothDevice? device;
   String _name = '';
@@ -26,13 +29,27 @@ class _AddFingerprintPageState extends State<AddFingerprintPage> {
   @override
   void initState() {
     super.initState();
-    // Future(() async {
-    //   FirebaseHelper().getNumberOfDevices();
-    // });
     Future(() async {
-      fetchDataFromFirebase(); // Firebaseからデータを取得する
+      fetchDevicename(); // Firebaseからデータを取得する
+    });
+    Future(() async {
+      fetchDataFromFirebase(); // Firebaseからデバイス名を取得する
     });
     startScan();
+  }
+
+  // firebaseからデバイス名を取得する非同期メソッド
+  Future<void> fetchDevicename() async {
+    try {
+      Map<String, String> fetchedDevices =
+          await FirebaseHelper().getAllDevices();
+      setState(() {
+        fetchDevices = fetchedDevices;
+        print(fetchedDevices);
+      });
+    } catch (e) {
+      print('Error fetching device names from Firebase: $e');
+    }
   }
 
 // Firebaseからデータを取得する非同期メソッド
@@ -110,6 +127,7 @@ class _AddFingerprintPageState extends State<AddFingerprintPage> {
               // 自分の端末のみを対象にするため。
               if (targetService) {
                 devices.add(result.device);
+                settedUUID.add(uuid);
               }
             }
           }
@@ -118,15 +136,15 @@ class _AddFingerprintPageState extends State<AddFingerprintPage> {
     });
 
     // 以前に接続したことのあるBluetoothを取得する
-    flutterBluePlus.connectedDevices.then((value) {
-      setState(() {
-        for (final result in value) {
-          if (!devices.contains(result)) {
-            devices.add(result);
-          }
-        }
-      });
-    });
+    // flutterBluePlus.connectedDevices.then((value) {
+    //   setState(() {
+    //     for (final result in value) {
+    //       if (!devices.contains(result)) {
+    //         devices.add(result);
+    //       }
+    //     }
+    //   });
+    // });
   }
 
   @override
@@ -139,18 +157,19 @@ class _AddFingerprintPageState extends State<AddFingerprintPage> {
     super.dispose();
   }
 
-  // TODO: 適当にやったの。1の時は真ん中に表示されるのあんまりかも
+  // TODO: 適当にやったの。1の時は真ん中に表示されるの
   Widget _addFingerprintWidget() {
     return Column(
       children: List.generate(devices.length, (index) {
         final device = devices[index];
+        final deviceName = fetchDevices[settedUUID[index]] ?? 'Unknown Device';
         if (devices.length == 1) {
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _addBtnWidget('No.${index + 1}', () {
+                _addBtnWidget(deviceName, () {
                   connectToDeviceAndSendData(device);
                 }),
               ],
@@ -189,8 +208,23 @@ class _AddFingerprintPageState extends State<AddFingerprintPage> {
       await device.connect();
       await sendUidAndNameToESP32(device);
       await device.disconnect();
+      if (!mounted) return;
+      AlertDialogHelper.showCustomDialog(
+          context: context,
+          title: '完了',
+          message: 'ユーザ情報を送信しました',
+          onPressed: () {
+            Navigator.pop(context);
+          });
     } catch (e) {
-      // エラーハンドリング
+      if (!mounted) return;
+      AlertDialogHelper.showCustomDialog(
+          context: context,
+          title: 'エラー',
+          message: '送信に失敗しました',
+          onPressed: () {
+            Navigator.pop(context);
+          });
     }
   }
 
