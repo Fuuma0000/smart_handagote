@@ -3,15 +3,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_handagote/constant.dart';
 
 import '../logic/firebase_helper.dart';
-import 'components/alertDialog.dart';
+import 'components/alert_dialog.dart';
 
 class HomePage extends StatefulWidget {
-  String myID;
-  HomePage({super.key, required this.myID});
+  final String myID;
+  const HomePage({super.key, required this.myID});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -99,7 +98,6 @@ class _HomePageState extends State<HomePage> {
     }
 
     // 予約一覧をタイムスタンプで昇順にソート
-    // TODO:_TypeError (type 'Null' is not a subtype of type 'Timestamp' of 'other')になる発生条件が不明
     reservations
         .sort((a, b) => a['reservation_time'].compareTo(b['reservation_time']));
     return reservations;
@@ -483,7 +481,7 @@ class _HomePageState extends State<HomePage> {
               reservations[index]['reservation_time'].toDate();
 
           // 予約時間を指定のフォーマットで表示
-          String formattedTime =
+          reservations[index]['formattedTime'] =
               DateFormat('yyyy/MM/dd HH:mm').format(reservationTime);
 
           return _reservationWidget(reservations[index], index + 1);

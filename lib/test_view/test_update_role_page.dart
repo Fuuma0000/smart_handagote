@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../constant.dart';
 import '../logic/firebase_helper.dart';
-import 'components/alertDialog.dart';
+import '../view/components/alert_dialog.dart';
 
 class UserManagementPage extends StatefulWidget {
   const UserManagementPage({super.key});

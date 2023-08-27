@@ -1,17 +1,14 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_handagote/logic/nav_bar.dart';
-import 'package:smart_handagote/view/home_page.dart';
 import 'package:smart_handagote/view/sign_in_page.dart';
-import 'package:smart_handagote/view/test_reservation_page.dart';
 
 import '../logic/firebase_helper.dart';
 import 'package:smart_handagote/constant.dart';
-import 'components/alertDialog.dart';
+import 'components/alert_dialog.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -28,10 +25,10 @@ class _SignUpPageState extends State<SignUpPage> {
   bool _isLoadSigningIn = false; // 処理中かどうかを管理するフラグ
   bool _showPassword = false;
 
-  TextEditingController _nameController = TextEditingController();
-  TextEditingController _studentIdController = TextEditingController();
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _studentIdController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   // ユーザー登録の処理
   Future<void> registerUser() async {
@@ -88,9 +85,9 @@ class _SignUpPageState extends State<SignUpPage> {
           SharedPreferences prefs = await SharedPreferences.getInstance();
           prefs.setString('user_id', user!.uid);
 
-          await Navigator.of(context).push(MaterialPageRoute(
+          Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => NavBar(
-                    userID: user!.uid,
+                    userID: user.uid,
                   )));
         }
 
@@ -155,7 +152,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     _inputWidget(_passwordController, 'パスワード：', true),
                     const SizedBox(height: 40),
                     // 登録ボタン
-                    Container(
+                    SizedBox(
                       width: MediaQuery.of(context).size.width * 0.8,
                       child: ElevatedButton(
                         onPressed: () async {

@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:smart_handagote/logic/firebase_helper.dart';
 
 import '../constant.dart';
-import 'components/alertDialog.dart';
+import '../view/components/alert_dialog.dart';
 
 class TestReservationPage extends StatefulWidget {
   const TestReservationPage({Key? key}) : super(key: key);
@@ -245,7 +245,6 @@ class _TestReservationPageState extends State<TestReservationPage> {
     }
 
     // 予約一覧をタイムスタンプで昇順にソート
-    // TODO:_TypeError (type 'Null' is not a subtype of type 'Timestamp' of 'other')になる発生条件が不明
     reservations
         .sort((a, b) => a['reservation_time'].compareTo(b['reservation_time']));
     return reservations;

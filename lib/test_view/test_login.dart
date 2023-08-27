@@ -2,13 +2,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../logic/firebase_helper.dart';
-import 'components/alertDialog.dart';
+import '../view/components/alert_dialog.dart';
 
 class TestLoginPage extends StatefulWidget {
   const TestLoginPage({Key? key}) : super(key: key);
 
   @override
-  _TestLoginPage createState() => _TestLoginPage();
+  State<TestLoginPage> createState() => _TestLoginPage();
 }
 
 class _TestLoginPage extends State<TestLoginPage> {

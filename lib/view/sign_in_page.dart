@@ -8,7 +8,7 @@ import 'package:smart_handagote/view/sign_up_page.dart';
 
 import '../constant.dart';
 import '../logic/firebase_helper.dart';
-import 'components/alertDialog.dart';
+import 'components/alert_dialog.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -22,8 +22,8 @@ class _SignInPageState extends State<SignInPage> {
   String _password = '';
   bool _isLoadingLoggingIn = false; // 処理中かどうかを管理するフラグ
   bool _showPassword = false;
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   // ログインの処理
   Future<void> loginUser() async {

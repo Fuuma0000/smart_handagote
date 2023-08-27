@@ -1,13 +1,11 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:smart_handagote/notification.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
-AndroidNotificationChannel channel = AndroidNotificationChannel(
+AndroidNotificationChannel channel = const AndroidNotificationChannel(
   'high_importance_channel',
   'High Importance Notifications',
   description: 'This channel is used for important notifications.',
@@ -37,7 +35,7 @@ class _TestNotificationPageState extends State<TestNotificationPage> {
 
     // final FlutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
     flutterLocalNotificationsPlugin.initialize(
-      InitializationSettings(
+      const InitializationSettings(
         android: AndroidInitializationSettings('@mipmap/ic_launcher'),
       ),
     );
@@ -98,12 +96,12 @@ class _TestNotificationPageState extends State<TestNotificationPage> {
               onPressed: () async {
                 print(token);
               },
-              child: Text('notification'),
+              child: const Text('notification'),
             ),
           ));
         }
 
-        return Scaffold(
+        return const Scaffold(
             body: Center(
           child: Text('loading'),
         ));

@@ -64,9 +64,9 @@ class FirebaseHelper {
     Map<String, String> devices = {};
     QuerySnapshot devicesQuerySnapshot =
         await FirebaseFirestore.instance.collection('devices').get();
-    devicesQuerySnapshot.docs.forEach((deviceDoc) {
+    for (var deviceDoc in devicesQuerySnapshot.docs) {
       devices[deviceDoc.id] = deviceDoc['device_name'];
-    });
+    }
     return devices;
   }
 

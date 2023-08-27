@@ -5,7 +5,7 @@ import 'package:smart_handagote/bluetooth_constants.dart';
 import 'package:smart_handagote/constant.dart';
 import 'package:smart_handagote/logic/firebase_helper.dart';
 import 'package:collection/collection.dart';
-import 'package:smart_handagote/view/components/alertDialog.dart';
+import 'package:smart_handagote/view/components/alert_dialog.dart';
 
 class AddFingerprintPage extends StatefulWidget {
   const AddFingerprintPage({super.key});

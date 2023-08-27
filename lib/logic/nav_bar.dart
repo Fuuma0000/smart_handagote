@@ -7,12 +7,11 @@ import 'package:smart_handagote/view/home_page.dart';
 import 'package:smart_handagote/view/setting_page.dart';
 
 import '../constant.dart';
-import '../view/test_update_role_page.dart';
 
 class NavBar extends StatefulWidget {
-  String userID;
+  final String userID;
 
-  NavBar({super.key, required this.userID});
+  const NavBar({super.key, required this.userID});
 
   @override
   State<NavBar> createState() => _NavBarState();
@@ -132,35 +131,5 @@ class _NavBarState extends State<NavBar> {
             )
           : null,
     );
-  }
-}
-
-class Page1 extends StatelessWidget {
-  const Page1({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        color: Constant.black, child: const Center(child: Text('Page 1')));
-  }
-}
-
-class Page2 extends StatelessWidget {
-  const Page2({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        color: Constant.black, child: const Center(child: Text('Page 2')));
-  }
-}
-
-class Page3 extends StatelessWidget {
-  const Page3({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        color: Constant.black, child: const Center(child: Text('Page 3')));
   }
 }

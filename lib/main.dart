@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:smart_handagote/logic/nav_bar.dart';
 import 'package:smart_handagote/view/sign_in_page.dart';
-import 'package:smart_handagote/view/test_notification.dart';
+import 'notification.dart';
 
 import 'constant.dart';
 import 'firebase_options.dart';
@@ -30,7 +30,7 @@ Future<void> main() async {
 
   // final FlutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   flutterLocalNotificationsPlugin.initialize(
-    InitializationSettings(
+    const InitializationSettings(
       android: AndroidInitializationSettings('@mipmap/ic_launcher'),
     ),
   );
@@ -44,11 +44,11 @@ Future<void> main() async {
     provisional: false,
     sound: true,
   );
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
-  MyApp({super.key});
+  const MyApp({super.key});
 
   @override
   State<MyApp> createState() => _MyAppState();

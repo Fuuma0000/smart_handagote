@@ -6,8 +6,8 @@ import 'package:smart_handagote/constant.dart';
 import '../logic/firebase_helper.dart';
 
 class HistoryPage extends StatefulWidget {
-  String myID;
-  HistoryPage({super.key, required this.myID});
+  final String myID;
+  const HistoryPage({super.key, required this.myID});
 
   @override
   State<HistoryPage> createState() => _HistoryPageState();
@@ -74,9 +74,9 @@ class _HistoryPageState extends State<HistoryPage> {
                 bottom: BorderSide(color: Colors.white),
               ),
             ),
-            child: Text(
+            child: const Text(
               '切り忘れ履歴',
-              style: const TextStyle(fontSize: 20, color: Constant.white),
+              style: TextStyle(fontSize: 20, color: Constant.white),
             ),
           ),
           _missingLogWidget(),

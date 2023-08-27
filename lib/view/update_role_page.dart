@@ -5,7 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../constant.dart';
 import '../logic/firebase_helper.dart';
-import 'components/alertDialog.dart';
+import 'components/alert_dialog.dart';
 
 class UpdateRolePage extends StatefulWidget {
   const UpdateRolePage({super.key});
@@ -20,7 +20,7 @@ class _UpdateRolePageState extends State<UpdateRolePage> {
   String _studentId = '';
   int _role = 0; // 初期値を設定
 
-  Color _textColor = Constant.white;
+  final Color _textColor = Constant.white;
 
   // 権限の選択肢
   final List<Map<String, dynamic>> _roleOptions = [

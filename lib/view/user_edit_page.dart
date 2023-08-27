@@ -3,7 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:smart_handagote/constant.dart';
 import 'package:smart_handagote/logic/firebase_helper.dart';
 
-import 'components/alertDialog.dart';
+import 'components/alert_dialog.dart';
 
 class UserEditPage extends StatefulWidget {
   final String userId;
@@ -129,8 +129,6 @@ class _UserEditPageState extends State<UserEditPage> {
             } else {
               _studentId = value;
             }
-            // setState(() {
-            // });
           },
           decoration: InputDecoration(
             border: OutlineInputBorder(

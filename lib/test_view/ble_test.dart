@@ -6,7 +6,7 @@ import 'package:smart_handagote/logic/firebase_helper.dart';
 import 'package:collection/collection.dart';
 
 class BleTest extends StatefulWidget {
-  const BleTest({Key? key});
+  const BleTest({super.key});
 
   @override
   State<BleTest> createState() => _BleTestState();
