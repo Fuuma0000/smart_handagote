@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:smart_handagote/constant.dart';
+import 'package:smart_handagote/logic/device_status.dart';
 
 import '../logic/firebase_helper.dart';
 import 'components/alert_dialog.dart';
@@ -316,20 +317,23 @@ class _HomePageState extends State<HomePage> {
             ];
             // はんだごて1・2の使用状況
             // dataのdeviceIdと一致した場合はデータをdataに追加
+
             for (var log in logs) {
               for (var d in data) {
                 if (log['deviceId'] == d['deviceId']) {
                   d['userName'] = log['userName'];
                   d['deviceName'] = log['deviceName'];
                   d['startTime'] = log['startTime'];
+
+                  // 状態を設定
                   if (log['isTurnOff']) {
-                    d['state'] = '切り忘れ';
+                    d['state'] = DeviceStatus.warning.name;
                   } else if (log['startTime'] == null) {
-                    d['state'] = '使用前';
+                    d['state'] = DeviceStatus.beforeUsing.name;
                   } else if (log['endTime'] == null) {
-                    d['state'] = '使用中';
+                    d['state'] = DeviceStatus.using.name;
                   } else {
-                    d['state'] = '空き';
+                    d['state'] = DeviceStatus.empty.name;
                   }
                 }
               }
