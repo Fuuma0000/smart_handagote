@@ -36,7 +36,7 @@ class AlertDialogHelper {
                     borderRadius: BorderRadius.circular(16),
                     color: Constant.green,
                   ),
-                  child: const Text('OK',
+                  child: const Text('戻る',
                       style: TextStyle(
                           color: Constant.white,
                           fontSize: 16,

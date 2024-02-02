@@ -27,9 +27,22 @@ class _SignInPageState extends State<SignInPage> {
 
   // ログインの処理
   Future<void> loginUser() async {
+    String errorMessage = 'ログインに失敗しました';
+
     setState(() {
       _isLoadingLoggingIn = true;
     });
+
+    // メールアドレスとパスワードが入力されているかチェック
+    if (_email.isEmpty || _password.isEmpty) {
+      AlertDialogHelper.showCustomDialog(
+          context: context, title: 'エラー', message: 'メールアドレスとパスワードを入力してください');
+      setState(() {
+        _isLoadingLoggingIn = false;
+      });
+      return;
+    }
+
     try {
       // ログイン
       final User? user = (await FirebaseAuth.instance
@@ -47,27 +60,48 @@ class _SignInPageState extends State<SignInPage> {
           SharedPreferences sharedPreferences =
               await SharedPreferences.getInstance();
           sharedPreferences.setString('user_id', user.uid);
-
-          // ホーム画面に遷移
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => NavBar(
-                        userID: user.uid,
-                      )));
         }
 
         AlertDialogHelper.showCustomDialog(
             context: context,
             title: 'ログインしました',
             message: '',
-            onPressed: onPressed);
+            onPressed: () {
+              // ホーム画面に遷移
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => NavBar(userID: user.uid),
+                ),
+              );
+            });
       }
+    } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
+
+      if (e.code == 'invalid-email') {
+        errorMessage = 'メールアドレスが正しくありません';
+      } else if (e.code == 'user-not-found') {
+        errorMessage = 'ユーザーが見つかりませんでした';
+      } else if (e.code == 'wrong-password') {
+        errorMessage = 'パスワードが正しくありません';
+      } else if (e.code == 'user-disabled') {
+        errorMessage = 'このメールアドレスは無効になっています';
+      } else if (e.code == 'too-many-requests') {
+        errorMessage = 'アクセスが集中しています。しばらくしてから再度お試しください';
+      } else if (e.code == 'operation-not-allowed') {
+        errorMessage = 'メールアドレスとパスワードでのログインは有効になっていません';
+      } else {
+        errorMessage = '予期せぬエラーが発生しました';
+      }
+
+      AlertDialogHelper.showCustomDialog(
+          context: context, title: 'ログイン失敗', message: errorMessage);
     } catch (e) {
       if (!mounted) return;
+
       AlertDialogHelper.showCustomDialog(
-          context: context, title: 'エラー', message: '');
-      print(e);
+          context: context, title: 'エラー', message: errorMessage);
     } finally {
       setState(() {
         _isLoadingLoggingIn = false; // 処理完了後に処理中フラグをfalseにセット
