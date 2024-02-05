@@ -113,7 +113,7 @@ class _SignInPageState extends State<SignInPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Constant.black,
+      backgroundColor: Theme.of(context).colorScheme.background,
       body: SafeArea(
         child: Center(
           child: Padding(
@@ -121,7 +121,7 @@ class _SignInPageState extends State<SignInPage> {
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(30),
-                color: Constant.darkGray,
+                color: Theme.of(context).colorScheme.onBackground,
               ),
               child: Center(
                 child: Column(
@@ -130,13 +130,16 @@ class _SignInPageState extends State<SignInPage> {
                     Container(
                       margin: const EdgeInsets.only(bottom: 30.0),
                       padding: const EdgeInsets.all(3.0),
-                      decoration: const BoxDecoration(
-                        border: Border(bottom: BorderSide(color: Colors.white)),
+                      decoration: BoxDecoration(
+                        border: Border(
+                            bottom: BorderSide(
+                                color:
+                                    Theme.of(context).colorScheme.secondary)),
                       ),
-                      child: const Text('ログイン',
+                      child: Text('ログイン',
                           style: TextStyle(
                             fontSize: 22,
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.secondary,
                           )),
                     ),
                     const SizedBox(height: 40),
@@ -182,11 +185,12 @@ class _SignInPageState extends State<SignInPage> {
                               MaterialPageRoute(
                                   builder: (context) => const SignUpPage()));
                         },
-                        icon: const Icon(FontAwesomeIcons.angleLeft,
-                            color: Constant.white),
-                        label: const Text('新規登録はこちら',
+                        icon: Icon(FontAwesomeIcons.angleLeft,
+                            color: Theme.of(context).colorScheme.secondary),
+                        label: Text('新規登録はこちら',
                             style: TextStyle(
-                                color: Constant.white, fontSize: 16))),
+                                color: Theme.of(context).colorScheme.secondary,
+                                fontSize: 16))),
                   ],
                 ),
               ),
@@ -205,6 +209,12 @@ class _SignInPageState extends State<SignInPage> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           color: Constant.white,
+          // 外枠
+          // themeがlightだったら
+          border: Border.all(
+            color: Theme.of(context).colorScheme.primary,
+            width: 1.2,
+          ),
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -215,10 +225,12 @@ class _SignInPageState extends State<SignInPage> {
               suffixIcon: isObscure
                   ? IconButton(
                       icon: Icon(
-                          _showPassword
-                              ? FontAwesomeIcons.solidEye
-                              : FontAwesomeIcons.solidEyeSlash,
-                          size: 18),
+                        _showPassword
+                            ? FontAwesomeIcons.solidEye
+                            : FontAwesomeIcons.solidEyeSlash,
+                        size: 18,
+                        color: Constant.darkGray,
+                      ),
                       onPressed: () {
                         setState(() {
                           _showPassword = !_showPassword;
@@ -227,6 +239,7 @@ class _SignInPageState extends State<SignInPage> {
                     )
                   : null,
               labelText: hintText,
+              labelStyle: TextStyle(color: Constant.darkGray),
               border: InputBorder.none,
             ),
           ),

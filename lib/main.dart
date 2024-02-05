@@ -100,7 +100,26 @@ class _MyAppState extends State<MyApp> {
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.white,
+          brightness: Brightness.light,
+          primary: Constant.lightGrey,
+          secondary: Constant.darkGray,
+          background: Constant.darkWhite,
+          onBackground: Constant.white,
+        ),
+        fontFamily: 'NotoSansJP',
+        useMaterial3: true,
+      ),
+      darkTheme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.black,
+          brightness: Brightness.dark,
+          primary: Constant.darkGray,
+          secondary: Constant.white,
+          background: Constant.black,
+          onBackground: Constant.darkGray,
+        ),
         fontFamily: 'NotoSansJP',
         useMaterial3: true,
       ),

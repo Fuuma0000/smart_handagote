@@ -30,7 +30,7 @@ class _SettingPageState extends State<SettingPage> {
           _settingBtnWidget(
             '指紋',
             FontAwesomeIcons.fingerprint,
-            Constant.grey,
+            Constant.lightGrey,
             () {
               Navigator.push(
                   context,
@@ -41,7 +41,7 @@ class _SettingPageState extends State<SettingPage> {
           // _settingBtnWidget(
           //   'はんだごて追加',
           //   FontAwesomeIcons.circlePlus,
-          //   Constant.grey,
+          //   Constant.lightGrey,
           //   () async {
           //     // TODO: はんだごて追加
           //   },
@@ -49,7 +49,7 @@ class _SettingPageState extends State<SettingPage> {
           _settingBtnWidget(
             'ユーザー承認',
             FontAwesomeIcons.check,
-            Constant.grey,
+            Constant.lightGrey,
             () async {
               Navigator.push(context, MaterialPageRoute(builder: (context) {
                 return const UpdateRolePage();
@@ -91,7 +91,7 @@ class _SettingPageState extends State<SettingPage> {
       splashColor: Colors.transparent,
       child: Container(
         decoration: BoxDecoration(
-          color: Constant.grey,
+          color: Constant.lightGrey,
           borderRadius: const BorderRadius.all(Radius.circular(14)),
         ),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
