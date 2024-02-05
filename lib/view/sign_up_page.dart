@@ -113,7 +113,7 @@ class _SignUpPageState extends State<SignUpPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Constant.black,
+      backgroundColor: Theme.of(context).colorScheme.background,
       body: SafeArea(
         child: Center(
           child: Padding(
@@ -121,7 +121,7 @@ class _SignUpPageState extends State<SignUpPage> {
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(30),
-                color: Constant.darkGray,
+                color: Theme.of(context).colorScheme.onBackground,
               ),
               child: Center(
                 child: Column(
@@ -130,13 +130,16 @@ class _SignUpPageState extends State<SignUpPage> {
                     Container(
                       margin: const EdgeInsets.only(bottom: 30.0),
                       padding: const EdgeInsets.all(3.0),
-                      decoration: const BoxDecoration(
-                        border: Border(bottom: BorderSide(color: Colors.white)),
+                      decoration: BoxDecoration(
+                        border: Border(
+                            bottom: BorderSide(
+                                color:
+                                    Theme.of(context).colorScheme.secondary)),
                       ),
-                      child: const Text('新規登録',
+                      child: Text('新規登録',
                           style: TextStyle(
                             fontSize: 22,
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.secondary,
                           )),
                     ),
                     // 名前
@@ -226,6 +229,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             ? FontAwesomeIcons.solidEye
                             : FontAwesomeIcons.solidEyeSlash,
                         size: 18,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
                       onPressed: () {
                         setState(() {
@@ -235,6 +239,9 @@ class _SignUpPageState extends State<SignUpPage> {
                     )
                   : null,
               labelText: hintText,
+              labelStyle: TextStyle(
+                color: Theme.of(context).colorScheme.primary,
+              ),
               border: InputBorder.none,
             ),
           ),
