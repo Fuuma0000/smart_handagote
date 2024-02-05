@@ -221,6 +221,9 @@ class _SignInPageState extends State<SignInPage> {
           child: TextField(
             obscureText: isObscure ? !_showPassword : false,
             controller: textEditingController,
+            style: TextStyle(
+              color: Constant.darkGray,
+            ),
             decoration: InputDecoration(
               suffixIcon: isObscure
                   ? IconButton(
