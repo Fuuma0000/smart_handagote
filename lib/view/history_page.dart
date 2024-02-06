@@ -63,20 +63,24 @@ class _HistoryPageState extends State<HistoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Constant.black,
+      backgroundColor: Theme.of(context).colorScheme.background,
       body: Column(
         children: [
           Container(
             margin: const EdgeInsets.symmetric(vertical: 20),
             padding: const EdgeInsets.symmetric(vertical: 3),
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               border: Border(
-                bottom: BorderSide(color: Colors.white),
+                bottom:
+                    BorderSide(color: Theme.of(context).colorScheme.secondary),
               ),
             ),
-            child: const Text(
+            child: Text(
               '切り忘れ履歴',
-              style: TextStyle(fontSize: 20, color: Constant.white),
+              style: TextStyle(
+                fontSize: 20,
+                color: Theme.of(context).colorScheme.secondary,
+              ),
             ),
           ),
           _missingLogWidget(),
@@ -91,8 +95,9 @@ class _HistoryPageState extends State<HistoryPage> {
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasError) {
           return Text('エラー: ${snapshot.error}',
-              style: const TextStyle(
-                  color: Colors.white)); // エラーが発生した場合にエラーメッセージを表示
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.secondary,
+              )); // エラーが発生した場合にエラーメッセージを表示
         }
 
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -166,7 +171,9 @@ class _HistoryPageState extends State<HistoryPage> {
                       const EdgeInsets.only(left: 20, right: 20, bottom: 20),
                   child: Text(
                     logs[index]['userName'],
-                    style: const TextStyle(color: Constant.white, fontSize: 20),
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.secondary,
+                        fontSize: 20),
                   )),
             ],
           );

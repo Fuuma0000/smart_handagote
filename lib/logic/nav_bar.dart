@@ -56,18 +56,18 @@ class _NavBarState extends State<NavBar> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: const Center(
+        title: Center(
           child: Text(
             'KOTE Alert',
             style: TextStyle(
-              color: Constant.white,
+              color: Theme.of(context).colorScheme.secondary,
               fontWeight: FontWeight.w600,
               letterSpacing: 1.2,
               fontFamily: 'Quicksand',
             ),
           ),
         ),
-        backgroundColor: Constant.darkGray,
+        backgroundColor: Theme.of(context).colorScheme.primary,
       ),
       body: PageView(
         controller: _pageController,
@@ -80,19 +80,19 @@ class _NavBarState extends State<NavBar> {
           ? AnimatedNotchBottomBar(
               /// Provide NotchBottomBarController
               notchBottomBarController: _controller,
-              color: Constant.darkGray,
+              color: Theme.of(context).colorScheme.primary,
               showLabel: false,
-              notchColor: Constant.darkGray,
+              notchColor: Theme.of(context).colorScheme.primary,
 
               /// restart app if you change removeMargins
               removeMargins: false,
               bottomBarWidth: 500,
               durationInMilliSeconds: 300,
-              bottomBarItems: const [
+              bottomBarItems: [
                 BottomBarItem(
                   inActiveItem: Icon(
                     Icons.history,
-                    color: Constant.white,
+                    color: Theme.of(context).colorScheme.secondary,
                   ),
                   activeItem: Icon(
                     Icons.history,
@@ -103,7 +103,7 @@ class _NavBarState extends State<NavBar> {
                 BottomBarItem(
                   inActiveItem: Icon(
                     Icons.home_filled,
-                    color: Constant.white,
+                    color: Theme.of(context).colorScheme.secondary,
                   ),
                   activeItem: Icon(
                     Icons.home_filled,
@@ -114,7 +114,7 @@ class _NavBarState extends State<NavBar> {
                 BottomBarItem(
                   inActiveItem: Icon(
                     Icons.settings,
-                    color: Constant.white,
+                    color: Theme.of(context).colorScheme.secondary,
                   ),
                   activeItem: Icon(
                     Icons.settings,

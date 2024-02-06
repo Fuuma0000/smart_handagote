@@ -300,10 +300,10 @@ class _AddFingerprintPageState extends State<AddFingerprintPage> {
       appBar: AppBar(
         centerTitle: true,
         title: const Text('指紋登録'),
-        backgroundColor: Constant.darkGray,
-        foregroundColor: Constant.white,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Theme.of(context).colorScheme.secondary,
       ),
-      backgroundColor: Constant.black,
+      backgroundColor: Theme.of(context).colorScheme.background,
       body: _addFingerprintWidget(),
     );
   }

@@ -97,10 +97,10 @@ class _UpdateRolePageState extends State<UpdateRolePage> {
       appBar: AppBar(
         centerTitle: true,
         title: const Text('権限変更'),
-        backgroundColor: Constant.darkGray,
-        foregroundColor: Constant.white,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Theme.of(context).colorScheme.secondary,
       ),
-      backgroundColor: Constant.black,
+      backgroundColor: Theme.of(context).colorScheme.background,
       body: Center(
         child: Column(
           children: [
@@ -119,7 +119,7 @@ class _UpdateRolePageState extends State<UpdateRolePage> {
           margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
           decoration: BoxDecoration(
-            color: Constant.darkGray,
+            color: Theme.of(context).colorScheme.primary,
             borderRadius: BorderRadius.circular(10),
           ),
           child: Column(
@@ -157,22 +157,33 @@ class _UpdateRolePageState extends State<UpdateRolePage> {
       children: [
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Text(title, style: TextStyle(color: _textColor, fontSize: 18)),
+          child: Text(title,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.secondary,
+                fontSize: 18,
+              )),
         ),
         TextFormField(
           initialValue: value,
           onChanged: (value) {
             _studentId = value;
           },
+          style: TextStyle(
+            color: Constant.darkGray,
+          ),
           decoration: InputDecoration(
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
             ),
             filled: true,
             fillColor: Constant.white,
-            hintStyle: TextStyle(color: Constant.darkGray),
-            suffixIcon:
-                Icon(FontAwesomeIcons.penToSquare, color: Constant.darkGray),
+            hintStyle: TextStyle(
+              color: Constant.darkGray,
+            ),
+            suffixIcon: Icon(
+              FontAwesomeIcons.penToSquare,
+              color: Constant.darkGray,
+            ),
           ),
         ),
       ],
@@ -185,7 +196,11 @@ class _UpdateRolePageState extends State<UpdateRolePage> {
       children: [
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Text(title, style: TextStyle(color: _textColor, fontSize: 18)),
+          child: Text(title,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.secondary,
+                fontSize: 18,
+              )),
         ),
         Container(
           padding: const EdgeInsets.symmetric(vertical: 10),
@@ -199,7 +214,7 @@ class _UpdateRolePageState extends State<UpdateRolePage> {
               decoration: InputDecoration(
                 labelText: '権限',
                 labelStyle: TextStyle(
-                  color: _textColor,
+                  color: Theme.of(context).colorScheme.onBackground,
                   fontSize: 20,
                 ),
                 // 下の線を消す
@@ -210,7 +225,10 @@ class _UpdateRolePageState extends State<UpdateRolePage> {
                   borderSide: BorderSide(color: Colors.transparent),
                 ),
               ),
-              style: TextStyle(color: _textColor, fontSize: 18),
+              style: TextStyle(
+                color: Constant.darkGray,
+                fontSize: 18,
+              ),
               borderRadius: BorderRadius.circular(10),
               dropdownColor: Constant.white,
               value: _role,
@@ -221,6 +239,7 @@ class _UpdateRolePageState extends State<UpdateRolePage> {
                       style: TextStyle(color: Constant.darkGray)),
                 );
               }).toList(),
+              focusColor: Constant.darkGray,
               onChanged: (int? value) {
                 setState(() {
                   if (value != null) {

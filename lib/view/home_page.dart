@@ -215,7 +215,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Constant.black,
+      backgroundColor: Theme.of(context).colorScheme.background,
       body: Center(
         child: Column(
           children: [
@@ -254,15 +254,16 @@ class _HomePageState extends State<HomePage> {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 20),
       padding: const EdgeInsets.symmetric(vertical: 3),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         border: Border(
-          bottom: BorderSide(color: Colors.white),
+          bottom: BorderSide(color: Theme.of(context).colorScheme.secondary),
         ),
       ),
-      child: Text(
-        title,
-        style: const TextStyle(fontSize: 20, color: Constant.white),
-      ),
+      child: Text(title,
+          style: TextStyle(
+            fontSize: 20,
+            color: Theme.of(context).colorScheme.secondary,
+          )),
     );
   }
 
@@ -273,8 +274,10 @@ class _HomePageState extends State<HomePage> {
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasError) {
           return Text('エラー: ${snapshot.error}',
-              style: const TextStyle(
-                  color: Colors.white)); // エラーが発生した場合にエラーメッセージを表示
+              style: TextStyle(
+                  color: Theme.of(context)
+                      .colorScheme
+                      .secondary)); // エラーが発生した場合にエラーメッセージを表示
         }
 
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -388,7 +391,11 @@ class _HomePageState extends State<HomePage> {
           // はんだごて名
           Text(
             log['deviceName'],
-            style: const TextStyle(fontSize: 18, color: Constant.white),
+            style: TextStyle(
+              fontSize: 18,
+              color: Theme.of(context).colorScheme.secondary,
+              // fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 10),
           // 空き状況
@@ -410,13 +417,19 @@ class _HomePageState extends State<HomePage> {
           // 名前
           Text(
             log['userName'],
-            style: const TextStyle(fontSize: 18, color: Constant.white),
+            style: TextStyle(
+              fontSize: 18,
+              color: Theme.of(context).colorScheme.secondary,
+            ),
           ),
           const SizedBox(height: 8),
           // 時間
           Text(
             timeText,
-            style: const TextStyle(fontSize: 16, color: Constant.white),
+            style: TextStyle(
+              fontSize: 16,
+              color: Theme.of(context).colorScheme.secondary,
+            ),
           ),
         ],
       ),

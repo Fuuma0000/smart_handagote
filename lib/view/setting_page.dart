@@ -22,7 +22,7 @@ class _SettingPageState extends State<SettingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Constant.black,
+      backgroundColor: Theme.of(context).colorScheme.background,
       body: Column(
         children: [
           const SizedBox(height: 40),
@@ -90,28 +90,41 @@ class _SettingPageState extends State<SettingPage> {
       highlightColor: Colors.transparent,
       splashColor: Colors.transparent,
       child: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: Constant.lightGrey,
-          borderRadius: const BorderRadius.all(Radius.circular(14)),
+          borderRadius: BorderRadius.all(Radius.circular(14)),
         ),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
         margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        child: const Row(
+        child: Row(
           children: [
-            Icon(FontAwesomeIcons.solidUser),
-            Spacer(flex: 1),
+            Icon(
+              FontAwesomeIcons.solidUser,
+              color: Constant.darkGray,
+            ),
+            const Spacer(flex: 1),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('ユーザー設定',
-                    style:
-                        TextStyle(fontSize: 20, fontWeight: FontWeight.w500)),
-                SizedBox(height: 4),
-                Text('名前・学籍番号', style: TextStyle(fontSize: 12)),
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                      color: Constant.black,
+                    )),
+                const SizedBox(height: 4),
+                Text('名前・学籍番号',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Constant.black,
+                    )),
               ],
             ),
-            Spacer(flex: 4),
-            Icon(FontAwesomeIcons.angleRight),
+            const Spacer(flex: 4),
+            Icon(
+              FontAwesomeIcons.angleRight,
+              color: Constant.darkGray,
+            ),
           ],
         ),
       ),
@@ -136,7 +149,10 @@ class _SettingPageState extends State<SettingPage> {
         margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         child: Row(
           children: [
-            Icon(icon),
+            Icon(
+              icon,
+              color: textColor,
+            ),
             const Spacer(flex: 1),
             Text(title,
                 style: TextStyle(
@@ -144,7 +160,10 @@ class _SettingPageState extends State<SettingPage> {
                     fontWeight: FontWeight.w500,
                     color: textColor)),
             const Spacer(flex: 4),
-            const Icon(FontAwesomeIcons.angleRight),
+            Icon(
+              FontAwesomeIcons.angleRight,
+              color: textColor,
+            ),
           ],
         ),
       ),

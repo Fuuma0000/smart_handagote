@@ -19,13 +19,14 @@ class AlertDialogHelper {
         return AlertDialog(
           title: Text(
             title,
-            style: const TextStyle(color: Colors.white),
+            style: TextStyle(color: Theme.of(context).colorScheme.secondary),
           ),
           content: Text(
             message,
-            style: const TextStyle(color: Colors.white, fontSize: 16),
+            style: TextStyle(
+                color: Theme.of(context).colorScheme.secondary, fontSize: 16),
           ),
-          backgroundColor: Constant.darkGray,
+          backgroundColor: Theme.of(context).colorScheme.primary,
           actions: <Widget>[
             TextButton(
               onPressed: onPressed!,

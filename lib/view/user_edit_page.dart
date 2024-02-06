@@ -17,8 +17,6 @@ class _UserEditPageState extends State<UserEditPage> {
   String _name = '';
   String _studentId = '';
 
-  final Color _textColor = Constant.white;
-
   Future<void> updateUser() async {
     // 同じ学籍番号の人がいたらダイアログ
     if (await FirebaseHelper()
@@ -48,10 +46,10 @@ class _UserEditPageState extends State<UserEditPage> {
       appBar: AppBar(
         centerTitle: true,
         title: const Text('ユーザー設定'),
-        backgroundColor: Constant.darkGray,
-        foregroundColor: Constant.white,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Theme.of(context).colorScheme.secondary,
       ),
-      backgroundColor: Constant.black,
+      backgroundColor: Theme.of(context).colorScheme.background,
       body: FutureBuilder(
         future: FirebaseHelper().getUserDoc(widget.userId),
         builder: (context, snapshot) {
@@ -79,7 +77,7 @@ class _UserEditPageState extends State<UserEditPage> {
           margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
           decoration: BoxDecoration(
-            color: Constant.darkGray,
+            color: Theme.of(context).colorScheme.primary,
             borderRadius: BorderRadius.circular(10),
           ),
           child: Column(
@@ -119,10 +117,16 @@ class _UserEditPageState extends State<UserEditPage> {
       children: [
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Text(title, style: TextStyle(color: _textColor, fontSize: 18)),
+          child: Text(title,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.secondary,
+                fontSize: 18,
+              )),
         ),
         TextFormField(
           initialValue: oldText,
+          style: TextStyle(color: Constant.darkGray),
+          cursorColor: Constant.darkGray,
           onChanged: (value) {
             if (title == '名前') {
               _name = value;

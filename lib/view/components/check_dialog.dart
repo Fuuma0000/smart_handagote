@@ -19,13 +19,13 @@ class CheckDialogHelper {
         return AlertDialog(
           title: Text(
             title,
-            style: const TextStyle(color: Constant.white),
+            style: TextStyle(color: Theme.of(context).colorScheme.secondary),
           ),
           content: Text(
             message,
-            style: const TextStyle(color: Constant.white),
+            style: TextStyle(color: Theme.of(context).colorScheme.secondary),
           ),
-          backgroundColor: Constant.darkGray,
+          backgroundColor: Theme.of(context).colorScheme.primary,
           actions: <Widget>[
             Row(
               children: [
